@@ -1,0 +1,13 @@
+{
+  "title": "JWT alg:none bypass",
+  "category": "web",
+  "difficulty": "medium",
+  "platform": "TryHackMe",
+  "tags": ["jwt", "auth-bypass"],
+  "sections": {
+    "recon": "Found a JWT-protected admin endpoint...",
+    "approach": "Tested alg header manipulation...",
+    "exploitChain": "Changed alg to none, stripped signature...",
+    "takeaway": "Always explicitly allowlist accepted algorithms server-side"
+  }
+}

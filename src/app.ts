@@ -4,6 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes";
+import writeupRoutes from "./routes/writeupRoutes";
 
 const app: Application = express();
 
@@ -17,6 +18,7 @@ app.get("/health", (_req: Request, res: Response) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/writeups", writeupRoutes);
 
 app.get("/api/protected", requireAuth, (req: AuthRequest, res: Response) => {
   res.json({ message: "You are authenticated", userId: req.userId });
