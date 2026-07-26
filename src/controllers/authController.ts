@@ -15,6 +15,7 @@ const REFRESH_COOKIE_OPTIONS = {
 };
 
 export const register = async (req: Request, res: Response) => {
+  let createdUser;
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -27,16 +28,22 @@ export const register = async (req: Request, res: Response) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ email, password: hashedPassword });
+    createdUser = await User.create({ email, password: hashedPassword });
 
-    const accessToken = generateAccessToken(user._id.toString());
-    const refreshToken = generateRefreshToken(user._id.toString());
+    const accessToken = generateAccessToken(createdUser._id.toString());
+    const refreshToken = generateRefreshToken(createdUser._id.toString());
 
     res.cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS);
     res
       .status(201)
-      .json({ accessToken, user: { id: user._id, email: user.email } });
+      .json({
+        accessToken,
+        user: { id: createdUser._id, email: createdUser.email },
+      });
   } catch (err) {
+    if (createdUser) {
+      await User.findByIdAndDelete(createdUser._id);
+    }
     res
       .status(500)
       .json({ message: "Server error", error: (err as Error).message });
