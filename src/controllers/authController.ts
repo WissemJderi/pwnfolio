@@ -34,12 +34,10 @@ export const register = async (req: Request, res: Response) => {
     const refreshToken = generateRefreshToken(createdUser._id.toString());
 
     res.cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS);
-    res
-      .status(201)
-      .json({
-        accessToken,
-        user: { id: createdUser._id, email: createdUser.email },
-      });
+    res.status(201).json({
+      accessToken,
+      user: { id: createdUser._id, email: createdUser.email },
+    });
   } catch (err) {
     if (createdUser) {
       await User.findByIdAndDelete(createdUser._id);

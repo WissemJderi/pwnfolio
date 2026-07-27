@@ -43,7 +43,7 @@ export const getWriteups = async (req: AuthRequest, res: Response) => {
     if (difficulty) filter.difficulty = difficulty;
 
     const writeups = await Writeup.find(filter)
-      .populate("author", "email")
+      .populate("author", "username")
       .sort({ createdAt: -1 });
 
     res.json(writeups);
@@ -58,7 +58,7 @@ export const getWriteupById = async (req: AuthRequest, res: Response) => {
   try {
     const writeup = await Writeup.findById(req.params.id).populate(
       "author",
-      "email",
+      "username",
     );
     if (!writeup) {
       return res.status(404).json({ message: "Writeup not found" });
