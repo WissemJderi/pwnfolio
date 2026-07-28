@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAuth } from "../middleware/authMiddleware";
+import { requireAuth, optionalAuth } from "../middleware/authMiddleware";
 import {
   createWriteup,
   getWriteups,
@@ -7,13 +7,16 @@ import {
   updateWriteup,
   deleteWriteup,
 } from "../controllers/writeupController";
+import { likeWriteup, unlikeWriteup } from "../controllers/likeController";
 
 const router = Router();
 
 router.get("/", getWriteups);
-router.get("/:id", getWriteupById);
+router.get("/:id", optionalAuth, getWriteupById);
 router.post("/", requireAuth, createWriteup);
 router.put("/:id", requireAuth, updateWriteup);
 router.delete("/:id", requireAuth, deleteWriteup);
+router.post("/:id/like", requireAuth, likeWriteup);
+router.delete("/:id/like", requireAuth, unlikeWriteup);
 
 export default router;

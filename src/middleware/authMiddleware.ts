@@ -24,3 +24,21 @@ export const requireAuth = (
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
+
+export const optionalAuth = (
+  req: AuthRequest,
+  _res: Response,
+  next: NextFunction,
+) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith("Bearer ")) {
+    const token = authHeader.split(" ")[1];
+    try {
+      const payload = verifyAccessToken(token);
+      req.userId = payload.userId;
+    } catch {
+      // invalid/expired token on a public route - just proceed without userId, don't block
+    }
+  }
+  next();
+};

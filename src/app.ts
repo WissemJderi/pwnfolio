@@ -8,7 +8,6 @@ import writeupRoutes from "./routes/writeupRoutes";
 import userRoutes from "./routes/userRoutes";
 
 const app: Application = express();
-
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(helmet());
 app.use(express.json());

@@ -1,5 +1,6 @@
 import { Response } from "express";
 import Writeup from "../models/Writeup";
+import Like from "../models/Like";
 import { AuthRequest } from "../middleware/authMiddleware";
 
 export const createWriteup = async (req: AuthRequest, res: Response) => {
@@ -63,14 +64,19 @@ export const getWriteupById = async (req: AuthRequest, res: Response) => {
     if (!writeup) {
       return res.status(404).json({ message: "Writeup not found" });
     }
-    res.json(writeup);
+
+    const likesCount = await Like.countDocuments({ writeup: writeup._id });
+    const isLikedByMe = req.userId
+      ? !!(await Like.findOne({ user: req.userId, writeup: writeup._id }))
+      : false;
+
+    res.json({ ...writeup.toObject(), likesCount, isLikedByMe });
   } catch (err) {
     res
       .status(500)
       .json({ message: "Server error", error: (err as Error).message });
   }
 };
-
 export const updateWriteup = async (req: AuthRequest, res: Response) => {
   try {
     const writeup = await Writeup.findById(req.params.id);

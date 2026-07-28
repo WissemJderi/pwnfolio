@@ -6,6 +6,7 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
 } from "../utils/jwt";
+import { generateUniqueUsername } from "../utils/generateUsername";
 
 const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
@@ -27,16 +28,25 @@ export const register = async (req: Request, res: Response) => {
       return res.status(409).json({ message: "Email already registered" });
     }
 
+    const username = await generateUniqueUsername(email);
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    createdUser = await User.create({ email, password: hashedPassword });
+    createdUser = await User.create({
+      email,
+      password: hashedPassword,
+      username,
+    });
 
     const accessToken = generateAccessToken(createdUser._id.toString());
     const refreshToken = generateRefreshToken(createdUser._id.toString());
-
     res.cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS);
     res.status(201).json({
       accessToken,
-      user: { id: createdUser._id, email: createdUser.email },
+      user: {
+        id: createdUser._id,
+        email: createdUser.email,
+        username: createdUser.username,
+      },
     });
   } catch (err) {
     if (createdUser) {
@@ -65,7 +75,10 @@ export const login = async (req: Request, res: Response) => {
     const refreshToken = generateRefreshToken(user._id.toString());
 
     res.cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS);
-    res.json({ accessToken, user: { id: user._id, email: user.email } });
+    res.json({
+      accessToken,
+      user: { id: user._id, email: user.email, username: user.username },
+    });
   } catch (err) {
     res
       .status(500)

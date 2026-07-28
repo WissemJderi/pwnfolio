@@ -1,6 +1,7 @@
 import "dotenv/config";
 import mongoose from "mongoose";
 import User from "../models/User";
+import { generateUniqueUsername } from "../utils/generateUsername";
 
 const migrate = async () => {
   try {
@@ -16,19 +17,9 @@ const migrate = async () => {
     );
 
     for (const user of usersWithoutUsername) {
-      let baseUsername = user.email.split("@")[0].toLowerCase();
-      let candidateUsername = baseUsername;
-      let suffix = 1;
-
-      // handle collisions - if the generated username is already taken, append a number
-      while (await User.findOne({ username: candidateUsername })) {
-        candidateUsername = `${baseUsername}${suffix}`;
-        suffix++;
-      }
-
-      user.username = candidateUsername;
+      user.username = await generateUniqueUsername(user.email);
       await user.save();
-      console.log(`Set username "${candidateUsername}" for ${user.email}`);
+      console.log(`Set username "${user.username}" for ${user.email}`);
     }
 
     console.log("Migration complete");
