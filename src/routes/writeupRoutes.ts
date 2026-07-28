@@ -8,6 +8,10 @@ import {
   deleteWriteup,
 } from "../controllers/writeupController";
 import { likeWriteup, unlikeWriteup } from "../controllers/likeController";
+import {
+  saveWriteup,
+  unsaveWriteup,
+} from "../controllers/savedWriteupController";
 
 const router = Router();
 
@@ -18,5 +22,7 @@ router.put("/:id", requireAuth, updateWriteup);
 router.delete("/:id", requireAuth, deleteWriteup);
 router.post("/:id/like", requireAuth, likeWriteup);
 router.delete("/:id/like", requireAuth, unlikeWriteup);
+router.post("/:id/save", requireAuth, saveWriteup);
+router.delete("/:id/save", requireAuth, unsaveWriteup);
 
 export default router;
