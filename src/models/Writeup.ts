@@ -41,4 +41,11 @@ const writeupSchema = new Schema<IWriteup>(
   { timestamps: true },
 );
 
+writeupSchema.index({
+  title: "text",
+  "sections.recon": "text",
+  "sections.approach": "text",
+  "sections.exploitChain": "text",
+  "sections.takeaway": "text",
+});
 export default model<IWriteup>("Writeup", writeupSchema);

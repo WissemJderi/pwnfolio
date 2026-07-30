@@ -1,0 +1,13 @@
+{
+  "title": "SQL injection in login form",
+  "category": "crypto",
+  "difficulty": "easy",
+  "platform": "tryhackme",
+  "tags": ["sqli", "auth-bypass"],
+  "sections": {
+    "recon": "Found a login form with no input sanitization...",
+    "approach": "Tried basic SQLi payloads in the username field...",
+    "exploitChain": "Used OR 1=1 to bypass authentication entirely...",
+    "takeaway": "Always use parameterized queries, never string-concatenate SQL"
+  }
+}

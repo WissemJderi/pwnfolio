@@ -35,19 +35,41 @@ export const createWriteup = async (req: AuthRequest, res: Response) => {
 
 export const getWriteups = async (req: AuthRequest, res: Response) => {
   try {
-    const { category, tag, platform, difficulty } = req.query;
+    const { category, tag, platform, difficulty, search, sort, page, limit } =
+      req.query;
 
     const filter: Record<string, unknown> = {};
     if (category) filter.category = category;
     if (tag) filter.tags = tag;
     if (platform) filter.platform = platform;
     if (difficulty) filter.difficulty = difficulty;
+    if (search) filter.$text = { $search: search as string };
 
-    const writeups = await Writeup.find(filter)
-      .populate("author", "username")
-      .sort({ createdAt: -1 });
+    const sortOption: Record<string, 1 | -1> =
+      sort === "oldest" ? { createdAt: 1 } : { createdAt: -1 };
 
-    res.json(writeups);
+    const pageNum = Math.max(parseInt(page as string) || 1, 1);
+    const limitNum = Math.min(parseInt(limit as string) || 10, 50);
+    const skip = (pageNum - 1) * limitNum;
+
+    const [writeups, total] = await Promise.all([
+      Writeup.find(filter)
+        .populate("author", "username")
+        .sort(sortOption)
+        .skip(skip)
+        .limit(limitNum),
+      Writeup.countDocuments(filter),
+    ]);
+
+    res.json({
+      writeups,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+      },
+    });
   } catch (err) {
     res
       .status(500)
