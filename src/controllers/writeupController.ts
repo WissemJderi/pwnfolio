@@ -111,7 +111,31 @@ export const updateWriteup = async (req: AuthRequest, res: Response) => {
         .json({ message: "Not authorized to edit this writeup" });
     }
 
-    Object.assign(writeup, req.body);
+    const allowedFields = [
+      "title",
+      "category",
+      "difficulty",
+      "platform",
+      "tags",
+      "sections",
+      "cveRefs",
+    ] as const;
+
+    const unknownFields = Object.keys(req.body).filter(
+      (key) => !(allowedFields as readonly string[]).includes(key),
+    );
+    if (unknownFields.length > 0) {
+      return res
+        .status(400)
+        .json({ message: `Invalid fields: ${unknownFields.join(", ")}` });
+    }
+
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        writeup.set(field, req.body[field]);
+      }
+    }
+
     await writeup.save();
 
     res.json(writeup);
