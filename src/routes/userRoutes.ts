@@ -5,10 +5,12 @@ import {
   updateMyProfile,
 } from "../controllers/userController";
 import { getMySavedWriteups } from "../controllers/savedWriteupController";
+import { getMyWriteups } from "../controllers/writeupController";
 
 const router = Router();
 
 router.get("/me/saved", requireAuth, getMySavedWriteups);
+router.get("/me/writeups", requireAuth, getMyWriteups);
 router.get("/:username", getPublicProfile);
 router.put("/me", requireAuth, updateMyProfile);
 

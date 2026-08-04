@@ -1,13 +1,13 @@
 import { Response } from "express";
 import Like from "../models/Like";
-import Writeup from "../models/Writeup";
+import { findVisibleWriteup } from "../utils/writeupAccess";
 import { AuthRequest } from "../middleware/authMiddleware";
 
 export const likeWriteup = async (req: AuthRequest, res: Response) => {
   try {
     const writeupId = req.params.id as string;
 
-    const writeup = await Writeup.findById(writeupId);
+    const writeup = await findVisibleWriteup(writeupId, req.userId);
     if (!writeup) {
       return res.status(404).json({ message: "Writeup not found" });
     }

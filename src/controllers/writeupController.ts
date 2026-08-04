@@ -1,17 +1,36 @@
 import { Response } from "express";
 import Writeup from "../models/Writeup";
 import Like from "../models/Like";
+import SavedWriteup from "../models/SavedWriteup";
+import Comment from "../models/Comment";
+import { findVisibleWriteup } from "../utils/writeupAccess";
 import { AuthRequest } from "../middleware/authMiddleware";
+
+const VALID_STATUSES = ["draft", "published"] as const;
 
 export const createWriteup = async (req: AuthRequest, res: Response) => {
   try {
-    const { title, category, difficulty, platform, tags, sections, cveRefs } =
-      req.body;
+    const {
+      title,
+      category,
+      difficulty,
+      platform,
+      tags,
+      sections,
+      cveRefs,
+      status,
+    } = req.body;
 
     if (!title || !category || !sections) {
       return res
         .status(400)
         .json({ message: "title, category, and sections are required" });
+    }
+
+    if (status !== undefined && !VALID_STATUSES.includes(status)) {
+      return res
+        .status(400)
+        .json({ message: "status must be draft or published" });
     }
 
     const writeup = await Writeup.create({
@@ -22,6 +41,7 @@ export const createWriteup = async (req: AuthRequest, res: Response) => {
       tags,
       sections,
       cveRefs,
+      status,
       author: req.userId,
     });
 
@@ -38,7 +58,7 @@ export const getWriteups = async (req: AuthRequest, res: Response) => {
     const { category, tag, platform, difficulty, search, sort, page, limit } =
       req.query;
 
-    const filter: Record<string, unknown> = {};
+    const filter: Record<string, unknown> = { status: "published" };
     if (category) filter.category = category;
     if (tag) filter.tags = tag;
     if (platform) filter.platform = platform;
@@ -79,20 +99,26 @@ export const getWriteups = async (req: AuthRequest, res: Response) => {
 
 export const getWriteupById = async (req: AuthRequest, res: Response) => {
   try {
-    const writeup = await Writeup.findById(req.params.id).populate(
-      "author",
-      "username",
-    );
+    const writeup = await findVisibleWriteup(req.params.id as string, req.userId);
     if (!writeup) {
       return res.status(404).json({ message: "Writeup not found" });
     }
+    await writeup.populate("author", "username");
 
     const likesCount = await Like.countDocuments({ writeup: writeup._id });
     const isLikedByMe = req.userId
       ? !!(await Like.findOne({ user: req.userId, writeup: writeup._id }))
       : false;
+    const commentCount = await Comment.countDocuments({
+      writeup: writeup._id,
+    });
 
-    res.json({ ...writeup.toObject(), likesCount, isLikedByMe });
+    res.json({
+      ...writeup.toObject(),
+      likesCount,
+      isLikedByMe,
+      commentCount,
+    });
   } catch (err) {
     res
       .status(500)
@@ -119,6 +145,7 @@ export const updateWriteup = async (req: AuthRequest, res: Response) => {
       "tags",
       "sections",
       "cveRefs",
+      "status",
     ] as const;
 
     const unknownFields = Object.keys(req.body).filter(
@@ -128,6 +155,15 @@ export const updateWriteup = async (req: AuthRequest, res: Response) => {
       return res
         .status(400)
         .json({ message: `Invalid fields: ${unknownFields.join(", ")}` });
+    }
+
+    if (
+      req.body.status !== undefined &&
+      !VALID_STATUSES.includes(req.body.status)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "status must be draft or published" });
     }
 
     for (const field of allowedFields) {
@@ -158,8 +194,28 @@ export const deleteWriteup = async (req: AuthRequest, res: Response) => {
         .json({ message: "Not authorized to delete this writeup" });
     }
 
+    await Promise.all([
+      Like.deleteMany({ writeup: writeup._id }),
+      SavedWriteup.deleteMany({ writeup: writeup._id }),
+      Comment.deleteMany({ writeup: writeup._id }),
+    ]);
     await writeup.deleteOne();
     res.status(204).send();
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Server error", error: (err as Error).message });
+  }
+};
+
+export const getMyWriteups = async (req: AuthRequest, res: Response) => {
+  try {
+    const { status } = req.query;
+    const filter: Record<string, unknown> = { author: req.userId };
+    if (status) filter.status = status;
+
+    const writeups = await Writeup.find(filter).sort({ updatedAt: -1 });
+    res.json(writeups);
   } catch (err) {
     res
       .status(500)

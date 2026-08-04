@@ -12,6 +12,11 @@ import {
   saveWriteup,
   unsaveWriteup,
 } from "../controllers/savedWriteupController";
+import {
+  createComment,
+  getComments,
+  deleteComment,
+} from "../controllers/commentController";
 
 const router = Router();
 
@@ -24,5 +29,8 @@ router.post("/:id/like", requireAuth, likeWriteup);
 router.delete("/:id/like", requireAuth, unlikeWriteup);
 router.post("/:id/save", requireAuth, saveWriteup);
 router.delete("/:id/save", requireAuth, unsaveWriteup);
+router.get("/:id/comments", optionalAuth, getComments);
+router.post("/:id/comments", requireAuth, createComment);
+router.delete("/:id/comments/:commentId", requireAuth, deleteComment);
 
 export default router;
