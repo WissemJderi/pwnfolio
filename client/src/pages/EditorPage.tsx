@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { SquarePen, Trash2 } from "lucide-react";
 import { api } from "../api/client";
 import type {
   Category,
@@ -144,7 +145,7 @@ export const EditorPage = () => {
         <span className="cursor" />
       </p>
       <h1 className="flex items-center gap-2 font-mono text-2xl font-bold">
-        <span className="text-vio-400">➤</span>
+        <SquarePen size={20} className="text-vio-400" />
         {editing ? "edit-writeup" : "new-writeup"}
       </h1>
 
@@ -255,7 +256,7 @@ export const EditorPage = () => {
               className="btn btn-danger text-xs"
               onClick={() => void remove()}
             >
-              rm
+              <Trash2 size={13} /> rm
             </button>
           )}
           <button

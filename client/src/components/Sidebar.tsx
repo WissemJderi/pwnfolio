@@ -1,14 +1,13 @@
 import { Link, NavLink } from "react-router-dom";
+import { BookOpen, Files, LogOut, Plus, Terminal } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
-  `group flex items-center gap-2 rounded-md border px-3 py-2 font-mono text-sm transition-colors ${
+  `group flex items-center gap-2 rounded-sm border px-3 py-2 font-mono text-sm transition-colors ${
     isActive
       ? "border-neon-500/30 bg-neon-500/10 text-neon-400"
       : "border-transparent text-ink-400 hover:bg-core-800/60 hover:text-ink-100"
   }`;
-
-const prompt = "❯";
 
 export const Sidebar = () => {
   const { user, logout } = useAuth();
@@ -17,18 +16,18 @@ export const Sidebar = () => {
     <>
       {user && (
         <NavLink to="/writeups/new" className={linkClass}>
-          <span className="text-ink-500 group-hover:text-neon-400">+</span>
+          <Plus size={14} className="text-ink-500 group-hover:text-neon-400" />
           new-writeup
         </NavLink>
       )}
       {user && (
         <NavLink to="/me/writeups" className={linkClass}>
-          <span className="text-ink-500 group-hover:text-neon-400">≡</span>
+          <Files size={14} className="text-ink-500 group-hover:text-neon-400" />
           my-writeups
         </NavLink>
       )}
       <NavLink to="/" end className={linkClass}>
-        <span className="text-ink-500 group-hover:text-neon-400">⌘</span>
+        <BookOpen size={14} className="text-ink-500 group-hover:text-neon-400" />
         all-writeups
       </NavLink>
     </>
@@ -40,8 +39,8 @@ export const Sidebar = () => {
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col border-r border-line-800 bg-core-900/80 backdrop-blur lg:flex">
         <div className="px-5 pb-4 pt-6">
           <Link to="/" className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-md border border-neon-500/40 bg-neon-500/10 font-mono text-lg text-neon-400 shadow-[0_0_14px_-4px_rgba(158,239,0,0.6)]">
-              ❯
+            <span className="flex h-9 w-9 items-center justify-center rounded-sm border border-neon-500/40 bg-neon-500/10 text-neon-400 shadow-[0_0_14px_-4px_rgba(158,239,0,0.6)]">
+              <Terminal size={18} />
             </span>
             <span className="font-mono text-xl font-semibold tracking-tight">
               pwn<span className="text-neon-400">folio</span>
@@ -63,8 +62,8 @@ export const Sidebar = () => {
 
         <div className="space-y-3 border-t border-line-800 px-4 py-4">
           {user ? (
-            <div className="flex items-center gap-3 rounded-md border border-line-700 bg-core-800/50 p-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-neon-500/40 bg-neon-500/10 font-mono font-semibold text-neon-400">
+            <div className="flex items-center gap-3 rounded-sm border border-line-700 bg-core-800/50 p-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-neon-500/40 bg-neon-500/10 font-mono font-semibold text-neon-400">
                 {user.username.slice(0, 1).toUpperCase()}
               </span>
               <div className="min-w-0 flex-1">
@@ -83,7 +82,7 @@ export const Sidebar = () => {
                 className="btn btn-ghost px-2 py-1 text-xs"
                 onClick={() => void logout()}
               >
-                ↪
+                <LogOut size={14} />
               </button>
             </div>
           ) : (
@@ -111,8 +110,8 @@ export const Sidebar = () => {
       <header className="sticky top-0 z-40 border-b border-line-800 bg-core-900/85 backdrop-blur lg:hidden">
         <div className="flex items-center justify-between px-4 py-3">
           <Link to="/" className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded border border-neon-500/40 bg-neon-500/10 font-mono text-sm text-neon-400">
-              {prompt}
+            <span className="flex h-7 w-7 items-center justify-center rounded-sm border border-neon-500/40 bg-neon-500/10 text-neon-400">
+              <Terminal size={15} />
             </span>
             <span className="font-mono text-base font-semibold">
               pwn<span className="text-neon-400">folio</span>
@@ -127,7 +126,7 @@ export const Sidebar = () => {
                 @{user.username}
               </Link>
               <button className="btn btn-ghost px-2 py-1 text-xs" onClick={() => void logout()}>
-                ↪
+                <LogOut size={14} />
               </button>
             </div>
           ) : (

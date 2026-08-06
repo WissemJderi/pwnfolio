@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { CornerDownRight, Trash2 } from "lucide-react";
 import { api } from "../api/client";
 import type { CommentWithReplies } from "../api/types";
 import { useAuth } from "../context/AuthContext";
@@ -143,10 +144,10 @@ export const Comments = ({ writeupId, onCountChange }: CommentsProps) => {
                 <div className="ml-auto">
                   {user && comment.author._id === user.id && (
                     <button
-                      className="text-blood-400 hover:underline"
+                      className="flex items-center gap-1 text-blood-400 hover:underline"
                       onClick={() => void remove(comment._id)}
                     >
-                      delete
+                      <Trash2 size={12} /> delete
                     </button>
                   )}
                 </div>
@@ -157,12 +158,12 @@ export const Comments = ({ writeupId, onCountChange }: CommentsProps) => {
                 </p>
                 {user && (
                   <button
-                    className="mt-2 font-mono text-xs text-ink-500 hover:text-neon-400"
+                    className="mt-2 flex items-center gap-1 font-mono text-xs text-ink-500 hover:text-neon-400"
                     onClick={() =>
                       setReplyingTo(replyingTo === comment._id ? null : comment._id)
                     }
                   >
-                    ↳ reply
+                    <CornerDownRight size={12} /> reply
                   </button>
                 )}
 
@@ -198,7 +199,7 @@ export const Comments = ({ writeupId, onCountChange }: CommentsProps) => {
                     {comment.replies.map((reply) => (
                       <li key={reply._id} className="border-b border-line-800/60 pb-3 last:border-0">
                         <div className="flex items-center gap-2 font-mono text-xs text-ink-500">
-                          <span className="text-neon-500">└─</span>
+                          <CornerDownRight size={12} className="text-neon-500" />
                           <span className="flex h-5 w-5 items-center justify-center rounded border border-line-700 bg-core-700/60 text-[10px] text-neon-400">
                             {reply.author.username.slice(0, 1).toUpperCase()}
                           </span>
@@ -210,10 +211,10 @@ export const Comments = ({ writeupId, onCountChange }: CommentsProps) => {
                           <div className="ml-auto">
                             {user && reply.author._id === user.id && (
                               <button
-                                className="text-blood-400 hover:underline"
+                                className="flex items-center gap-1 text-blood-400 hover:underline"
                                 onClick={() => void remove(reply._id)}
                               >
-                                delete
+                                <Trash2 size={12} /> delete
                               </button>
                             )}
                           </div>

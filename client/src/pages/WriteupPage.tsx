@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  Bookmark,
+  ChevronRight,
+  Heart,
+  MessageSquare,
+  Pencil,
+} from "lucide-react";
 import { api } from "../api/client";
 import type { Writeup } from "../api/types";
 import { useAuth } from "../context/AuthContext";
@@ -163,17 +170,19 @@ export const WriteupPage = () => {
           onClick={() => void toggleLike()}
           className={`btn ${writeup.isLikedByMe ? "btn-primary" : "btn-outline"} text-xs`}
         >
-          ♥ {writeup.likesCount ?? 0}
+          <Heart size={14} fill={writeup.isLikedByMe ? "currentColor" : "none"} />
+          {writeup.likesCount ?? 0}
         </button>
         <button
           onClick={() => void toggleSave()}
           className={`btn ${writeup.isSavedByMe ? "btn-primary" : "btn-outline"} text-xs`}
         >
-          {writeup.isSavedByMe ? "saved ✓" : "save"}
+          <Bookmark size={14} fill={writeup.isSavedByMe ? "currentColor" : "none"} />
+          {writeup.isSavedByMe ? "saved" : "save"}
         </button>
         {isMine && (
           <Link to={`/writeups/${writeup._id}/edit`} className="btn btn-outline text-xs">
-            edit
+            <Pencil size={13} /> edit
           </Link>
         )}
         {actionError && (
@@ -204,9 +213,9 @@ export const WriteupPage = () => {
                   <li key={key}>
                     <a
                       href={`#${label}`}
-                      className="inline-flex items-center gap-1.5 text-ink-400 hover:text-neon-400"
+                      className="inline-flex items-center gap-1 text-ink-400 hover:text-neon-400"
                     >
-                      <span className="text-neon-500">›</span> {title}
+                      <ChevronRight size={13} className="text-neon-500" /> {title}
                     </a>
                   </li>
                 ))}
@@ -232,11 +241,15 @@ export const WriteupPage = () => {
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-ink-500">likes</dt>
-                  <dd className="text-neon-500">♥ {writeup.likesCount ?? 0}</dd>
+                  <dd className="flex items-center gap-1 text-neon-500">
+                    <Heart size={12} fill="currentColor" /> {writeup.likesCount ?? 0}
+                  </dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-ink-500">comments</dt>
-                  <dd className="text-ink-300">💬 {writeup.commentCount ?? 0}</dd>
+                  <dd className="flex items-center gap-1 text-ink-300">
+                    <MessageSquare size={12} /> {writeup.commentCount ?? 0}
+                  </dd>
                 </div>
               </dl>
             </div>

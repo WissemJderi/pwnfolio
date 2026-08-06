@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ArrowRight, TriangleAlert } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { ApiError } from "../api/client";
 
@@ -75,14 +76,17 @@ const AuthCard = ({
           />
         </div>
         {error && (
-          <p className="font-mono text-xs text-blood-400">✗ {error}</p>
+          <p className="flex items-center gap-1.5 font-mono text-xs text-blood-400">
+            <TriangleAlert size={13} /> {error}
+          </p>
         )}
         <button
           type="submit"
           className="btn btn-primary w-full font-semibold"
           disabled={busy}
         >
-          {busy ? "authenticating…" : `${submitLabel} →`}
+          {busy ? "authenticating…" : submitLabel}
+          <ArrowRight size={14} />
         </button>
       </form>
       <p className="mt-4 text-center font-mono text-xs text-ink-500">{footer}</p>

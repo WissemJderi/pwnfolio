@@ -43,7 +43,7 @@ export const ProfilePage = () => {
     <div>
       <div className="panel grid-bg p-6">
         <div className="flex items-center gap-4">
-          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-neon-500/40 bg-neon-500/10 font-mono text-3xl font-bold text-neon-400 shadow-[0_0_20px_-6px_rgba(158,239,0,0.5)]">
+          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-sm border border-neon-500/40 bg-neon-500/10 font-mono text-3xl font-bold text-neon-400 shadow-[0_0_20px_-6px_rgba(158,239,0,0.5)]">
             {profile.user.username.slice(0, 1).toUpperCase()}
           </span>
           <div className="min-w-0">
@@ -58,7 +58,7 @@ export const ProfilePage = () => {
           </div>
         </div>
         {profile.user.bio && (
-          <p className="mt-4 whitespace-pre-wrap rounded-md border border-line-800 bg-core-900/70 p-3 text-sm leading-relaxed text-ink-300">
+          <p className="mt-4 whitespace-pre-wrap rounded-sm border border-line-800 bg-core-900/70 p-3 text-sm leading-relaxed text-ink-300">
             {profile.user.bio}
           </p>
         )}

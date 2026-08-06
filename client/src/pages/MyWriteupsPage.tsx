@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Eye, Pencil, Plus, Rocket, SquarePen, Trash2 } from "lucide-react";
 import { api } from "../api/client";
 import type { Writeup, WriteupStatus } from "../api/types";
 import { fmtDate } from "../lib/format";
@@ -61,10 +62,10 @@ export const MyWriteupsPage = () => {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="flex items-center gap-2 font-mono text-2xl font-bold">
-          <span className="text-vio-400">➤</span> /me/writeups
+          <SquarePen size={20} className="text-vio-400" /> /me/writeups
         </h1>
         <Link to="/writeups/new" className="btn btn-primary text-xs">
-          + new writeup
+          <Plus size={14} /> new writeup
         </Link>
       </div>
 
@@ -115,22 +116,22 @@ export const MyWriteupsPage = () => {
               <div className="flex flex-wrap gap-2">
                 {w.status === "published" && (
                   <Link to={`/writeups/${w._id}`} className="btn btn-outline text-xs">
-                    view
+                    <Eye size={13} /> view
                   </Link>
                 )}
                 <Link to={`/writeups/${w._id}/edit`} className="btn btn-outline text-xs">
-                  edit
+                  <Pencil size={13} /> edit
                 </Link>
                 {w.status === "draft" && (
                   <button
                     className="btn btn-primary text-xs"
                     onClick={() => void publish(w)}
                   >
-                    publish
+                    <Rocket size={13} /> publish
                   </button>
                 )}
                 <button className="btn btn-danger text-xs" onClick={() => void remove(w)}>
-                  rm
+                  <Trash2 size={13} /> rm
                 </button>
               </div>
             </li>

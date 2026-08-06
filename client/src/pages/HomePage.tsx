@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, Search, TriangleAlert } from "lucide-react";
 import { api } from "../api/client";
 import type { Category, Difficulty, WriteupListResponse } from "../api/types";
 import { CATEGORY_LABELS } from "../lib/format";
@@ -62,7 +63,7 @@ export const HomePage = () => {
     <div>
       <div className="mb-6 flex items-baseline justify-between gap-4">
         <h1 className="flex items-center gap-2 font-mono text-2xl font-bold">
-          <span className="text-blood-400">⚠</span> /writeups
+          <TriangleAlert size={20} className="text-blood-400" /> /writeups
           <span className="cursor" />
         </h1>
         <p className="muted hidden sm:block">
@@ -84,7 +85,7 @@ export const HomePage = () => {
               onChange={(e) => setSearch(e.target.value)}
             />
             <button type="submit" className="btn btn-primary shrink-0">
-              run
+              <Search size={14} /> run
             </button>
           </form>
         </div>
@@ -121,7 +122,7 @@ export const HomePage = () => {
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
           >
-            ← prev
+            <ChevronLeft size={15} /> prev
           </button>
           <span className="text-sm text-ink-500">
             {pagination.page} / {pagination.totalPages}
@@ -131,7 +132,7 @@ export const HomePage = () => {
             disabled={page >= pagination.totalPages}
             onClick={() => setPage(page + 1)}
           >
-            next →
+            next <ChevronRight size={15} />
           </button>
         </div>
       )}

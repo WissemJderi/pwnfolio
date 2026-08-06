@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Heart, MessageSquare } from "lucide-react";
 import type { Writeup } from "../api/types";
 import {
   CATEGORY_BADGE,
@@ -77,8 +78,12 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
           <span className="shrink-0">{fmtDate(writeup.createdAt)}</span>
         </span>
         <span className="flex shrink-0 items-center gap-3">
-          <span className="text-neon-500">♥ {writeup.likesCount ?? 0}</span>
-          <span className="text-ink-400">💬 {writeup.commentCount ?? 0}</span>
+          <span className="flex items-center gap-1 text-neon-500">
+            <Heart size={13} fill="currentColor" /> {writeup.likesCount ?? 0}
+          </span>
+          <span className="flex items-center gap-1 text-ink-400">
+            <MessageSquare size={13} /> {writeup.commentCount ?? 0}
+          </span>
         </span>
       </div>
     </article>
