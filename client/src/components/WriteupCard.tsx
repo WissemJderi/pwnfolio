@@ -12,8 +12,8 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
     typeof writeup.author === "string" ? null : writeup.author;
 
   return (
-    <article className="card flex flex-col gap-2 transition-colors hover:border-slate-700">
-      <div className="flex items-center gap-2 text-xs">
+    <article className="panel group flex flex-col gap-3 p-4 transition-all duration-150 hover:-translate-y-0.5 hover:border-neon-500/40 hover:shadow-[0_0_24px_-8px_rgba(158,239,0,0.35)]">
+      <div className="flex items-center gap-1.5 text-xs">
         <span className={`badge ${CATEGORY_BADGE[writeup.category]}`}>
           {CATEGORY_LABELS[writeup.category]}
         </span>
@@ -23,54 +23,62 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
           </span>
         )}
         {writeup.platform && (
-          <span className="badge bg-slate-700/40 text-slate-300">
+          <span className="badge border-line-700 bg-core-700/60 text-ink-400">
             {writeup.platform}
           </span>
         )}
         {writeup.status === "draft" && (
-          <span className="badge bg-yellow-500/15 text-yellow-300">draft</span>
+          <span className="badge border-gold-400/40 bg-gold-400/10 text-gold-300">
+            draft
+          </span>
         )}
+        <span className="ml-auto font-mono text-[10px] text-ink-500/70">
+          [{writeup._id.slice(-4)}]
+        </span>
       </div>
 
-      <h2 className="text-lg font-semibold leading-snug">
+      <h2 className="font-mono text-base font-semibold leading-snug text-ink-100">
         <Link
           to={`/writeups/${writeup._id}`}
-          className="hover:text-emerald-300"
+          className="hover:text-neon-400"
         >
           {writeup.title}
         </Link>
       </h2>
 
       {writeup.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1.5">
           {writeup.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-slate-400"
-            >
+            <span key={tag} className="tag">
               #{tag}
             </span>
           ))}
         </div>
       )}
 
-      <div className="mt-auto flex items-center justify-between pt-1 text-xs text-slate-500">
-        <span>
+      <div className="mt-auto flex items-center justify-between border-t border-line-800 pt-2.5 font-mono text-xs text-ink-500">
+        <span className="flex min-w-0 items-center gap-1.5">
           {author ? (
-            <Link
-              to={`/users/${author.username}`}
-              className="text-slate-400 hover:text-emerald-300"
-            >
-              @{author.username}
-            </Link>
+            <>
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded border border-line-700 bg-core-700/60 text-[10px] text-neon-400">
+                {author.username.slice(0, 1).toUpperCase()}
+              </span>
+              <Link
+                to={`/users/${author.username}`}
+                className="truncate text-ink-400 hover:text-neon-400"
+              >
+                @{author.username}
+              </Link>
+            </>
           ) : (
             "unknown author"
-          )}{" "}
-          · {fmtDate(writeup.createdAt)}
+          )}
+          <span className="text-ink-500/60">·</span>
+          <span className="shrink-0">{fmtDate(writeup.createdAt)}</span>
         </span>
-        <span className="flex items-center gap-3">
-          <span>♥ {writeup.likesCount ?? 0}</span>
-          <span>💬 {writeup.commentCount ?? 0}</span>
+        <span className="flex shrink-0 items-center gap-3">
+          <span className="text-neon-500">♥ {writeup.likesCount ?? 0}</span>
+          <span className="text-ink-400">💬 {writeup.commentCount ?? 0}</span>
         </span>
       </div>
     </article>

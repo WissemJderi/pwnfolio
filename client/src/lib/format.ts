@@ -17,19 +17,19 @@ export const CATEGORY_LABELS: Record<Category, string> = {
 };
 
 export const CATEGORY_BADGE: Record<Category, string> = {
-  web: "bg-sky-500/15 text-sky-300",
-  pwn: "bg-red-500/15 text-red-300",
-  crypto: "bg-amber-500/15 text-amber-300",
-  forensics: "bg-violet-500/15 text-violet-300",
-  osint: "bg-emerald-500/15 text-emerald-300",
-  misc: "bg-slate-500/15 text-slate-300",
+  web: "border-sky-500/40 bg-sky-500/10 text-sky-300",
+  pwn: "border-blood-400/40 bg-blood-400/10 text-blood-300",
+  crypto: "border-gold-400/40 bg-gold-400/10 text-gold-300",
+  forensics: "border-vio-400/40 bg-vio-400/10 text-vio-300",
+  osint: "border-neon-500/40 bg-neon-500/10 text-neon-400",
+  misc: "border-line-700 bg-core-700/60 text-ink-400",
 };
 
 export const DIFFICULTY_BADGE: Record<Difficulty, string> = {
-  easy: "bg-emerald-500/15 text-emerald-300",
-  medium: "bg-amber-500/15 text-amber-300",
-  hard: "bg-orange-500/15 text-orange-300",
-  insane: "bg-red-500/15 text-red-300",
+  easy: "border-neon-500/40 bg-neon-500/10 text-neon-400",
+  medium: "border-gold-400/40 bg-gold-400/10 text-gold-300",
+  hard: "border-orange-500/40 bg-orange-500/10 text-orange-300",
+  insane: "border-blood-400/40 bg-blood-400/10 text-blood-300",
 };
 
 export const getAuthorId = (writeup: {

@@ -23,49 +23,70 @@ export const ProfilePage = () => {
       .finally(() => setLoading(false));
   }, [username]);
 
-  if (loading) return <p className="py-16 text-center text-slate-400">Loading…</p>;
+  if (loading) {
+    return (
+      <p className="cursor py-20 text-center font-mono text-ink-400">Loading…</p>
+    );
+  }
 
   if (notFound) {
-    return <p className="py-16 text-center text-slate-500">User not found.</p>;
+    return (
+      <p className="py-20 text-center font-mono text-ink-500">
+        $ whoami /users/{username} → 404: operator not found
+      </p>
+    );
   }
 
   if (!profile) return null;
 
   return (
     <div>
-      <div className="card">
-        <h1 className="text-2xl font-bold text-emerald-300">
-          @{profile.user.username}
-        </h1>
+      <div className="panel grid-bg p-6">
+        <div className="flex items-center gap-4">
+          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-neon-500/40 bg-neon-500/10 font-mono text-3xl font-bold text-neon-400 shadow-[0_0_20px_-6px_rgba(158,239,0,0.5)]">
+            {profile.user.username.slice(0, 1).toUpperCase()}
+          </span>
+          <div className="min-w-0">
+            <h1 className="truncate font-mono text-2xl font-bold text-neon-400">
+              @{profile.user.username}
+            </h1>
+            <p className="muted mt-1">
+              operator · joined {fmtDate(profile.user.createdAt)} ·{" "}
+              {profile.writeups.length} published writeup
+              {profile.writeups.length === 1 ? "" : "s"}
+            </p>
+          </div>
+        </div>
         {profile.user.bio && (
-          <p className="mt-2 whitespace-pre-wrap text-sm text-slate-300">
+          <p className="mt-4 whitespace-pre-wrap rounded-md border border-line-800 bg-core-900/70 p-3 text-sm leading-relaxed text-ink-300">
             {profile.user.bio}
           </p>
         )}
-        <p className="mt-3 text-xs text-slate-500">
-          joined {fmtDate(profile.user.createdAt)}
-        </p>
         {profile.user.interests && profile.user.interests.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1">
+          <div className="mt-4 flex flex-wrap gap-1.5">
             {profile.user.interests.map((i) => (
-              <span
-                key={i}
-                className="rounded bg-slate-800 px-2 py-0.5 text-xs text-slate-400"
-              >
-                {i}
+              <span key={i} className="tag">
+                #{i}
               </span>
             ))}
           </div>
         )}
       </div>
 
-      <h2 className="mt-8 text-xl font-semibold">Writeups</h2>
+      <h2 className="mt-8 mb-1 flex items-center gap-2 font-mono text-lg font-semibold">
+        <span className="text-neon-500">##</span> writeups
+        <span className="text-xs font-normal text-ink-500">
+          ({profile.writeups.length})
+        </span>
+      </h2>
+      <p className="muted mb-4">// knowledge shared is power multiplied</p>
+
       {profile.writeups.length === 0 ? (
-        <p className="mt-3 text-sm text-slate-500">
-          No published writeups yet.
+        <p className="py-10 text-center font-mono text-ink-500">
+          // no published writeups yet
         </p>
       ) : (
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           {profile.writeups.map((w) => (
             <WriteupCard key={w._id} writeup={w} />
           ))}
@@ -73,12 +94,9 @@ export const ProfilePage = () => {
       )}
 
       {profile.writeups.length > 0 && (
-        <p className="mt-6 text-sm text-slate-500">
-          View all on{" "}
-          <Link
-            to="/"
-            className="text-emerald-300 hover:underline"
-          >
+        <p className="mt-6 font-mono text-xs text-ink-500">
+          view all on{" "}
+          <Link to="/" className="text-neon-400 hover:underline">
             the writeup list
           </Link>
           .

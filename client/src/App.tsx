@@ -1,5 +1,5 @@
 import { Route, Routes, Outlet } from "react-router-dom";
-import { Navbar } from "./components/Navbar";
+import { Sidebar } from "./components/Sidebar";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { HomePage } from "./pages/HomePage";
 import { WriteupPage } from "./pages/WriteupPage";
@@ -10,14 +10,16 @@ import { LoginPage, RegisterPage } from "./pages/AuthPages";
 import { NotFoundPage } from "./pages/NotFoundPage";
 
 const Layout = () => (
-  <div className="flex min-h-screen flex-col">
-    <Navbar />
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
-      <Outlet />
-    </main>
-    <footer className="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
-      pwnfolio — writeups for hackers, by hackers
-    </footer>
+  <div className="min-h-screen">
+    <Sidebar />
+    <div className="flex min-h-screen flex-col lg:pl-72">
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 md:px-8">
+        <Outlet />
+      </main>
+      <footer className="border-t border-line-800 px-6 py-6 text-center font-mono text-xs text-ink-500">
+        pwnfolio — writeups for hackers, by hackers [ act like you belong ]
+      </footer>
+    </div>
   </div>
 );
 

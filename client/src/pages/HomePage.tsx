@@ -52,11 +52,7 @@ export const HomePage = () => {
         setPage(1);
         set(current === key ? "" : key);
       }}
-      className={`rounded-full px-3 py-1 text-xs transition-colors ${
-        current === key
-          ? "bg-emerald-500 text-slate-950"
-          : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-      }`}
+      className={`chip ${current === key ? "chip-active" : ""}`}
     >
       {label}
     </button>
@@ -64,32 +60,51 @@ export const HomePage = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">Latest writeups</h1>
-
-      <form onSubmit={applySearch} className="mt-4 flex gap-2">
-        <input
-          className="input max-w-md"
-          placeholder="Search title or sections…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <button type="submit" className="btn-primary">
-          Search
-        </button>
-      </form>
-
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <span className="text-xs text-slate-500">Category:</span>
-        {CATEGORIES.map((c) => filterBtn(c, CATEGORY_LABELS[c], category, setCategory))}
-        <span className="ml-4 text-xs text-slate-500">Difficulty:</span>
-        {DIFFICULTIES.map((d) => filterBtn(d, d, difficulty, setDifficulty))}
+      <div className="mb-6 flex items-baseline justify-between gap-4">
+        <h1 className="flex items-center gap-2 font-mono text-2xl font-bold">
+          <span className="text-blood-400">⚠</span> /writeups
+          <span className="cursor" />
+        </h1>
+        <p className="muted hidden sm:block">
+          {pagination ? `${pagination.total}` : "…"} result
+          {pagination && pagination.total !== 1 ? "s" : ""} · sorted by recency
+        </p>
       </div>
 
+      <section className="panel grid-bg overflow-hidden p-4 md:p-5">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <span className="font-mono text-sm font-bold text-neon-400">
+            invariant❯
+          </span>
+          <form onSubmit={applySearch} className="flex flex-1 gap-2">
+            <input
+              className="input"
+              placeholder="search index… (title / sections)"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <button type="submit" className="btn btn-primary shrink-0">
+              run
+            </button>
+          </form>
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span className="muted">category:</span>
+          {CATEGORIES.map((c) => filterBtn(c, CATEGORY_LABELS[c], category, setCategory))}
+          <span className="muted ml-1">difficulty:</span>
+          {DIFFICULTIES.map((d) => filterBtn(d, d, difficulty, setDifficulty))}
+        </div>
+        <p className="mt-4 hidden font-mono text-[10px] text-ink-500/70 md:block">
+          $ index --format=pwnfolio --tail --follow
+        </p>
+      </section>
+
       {loading ? (
-        <p className="py-16 text-center text-slate-400">Loading…</p>
+        <p className="cursor py-20 text-center font-mono text-ink-400">Loading…</p>
       ) : writeups.length === 0 ? (
-        <p className="py-16 text-center text-slate-500">
-          No writeups found. Try clearing the filters.
+        <p className="py-20 text-center font-mono text-ink-500">
+          no matches in index — try clearing the filters
         </p>
       ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -100,23 +115,23 @@ export const HomePage = () => {
       )}
 
       {pagination && pagination.totalPages > 1 && (
-        <div className="mt-8 flex items-center justify-center gap-4">
+        <div className="mt-8 flex items-center justify-center gap-4 font-mono">
           <button
-            className="btn-outline"
+            className="btn btn-outline"
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
           >
-            ← Prev
+            ← prev
           </button>
-          <span className="text-sm text-slate-400">
-            Page {pagination.page} of {pagination.totalPages}
+          <span className="text-sm text-ink-500">
+            {pagination.page} / {pagination.totalPages}
           </span>
           <button
-            className="btn-outline"
+            className="btn btn-outline"
             disabled={page >= pagination.totalPages}
             onClick={() => setPage(page + 1)}
           >
-            Next →
+            next →
           </button>
         </div>
       )}

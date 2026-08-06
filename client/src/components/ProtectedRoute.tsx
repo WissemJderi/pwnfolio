@@ -7,7 +7,11 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
 
   if (initializing) {
-    return <p className="py-16 text-center text-slate-400">Loading…</p>;
+    return (
+      <p className="cursor py-20 text-center font-mono text-ink-400">
+        verifying credentials…
+      </p>
+    );
   }
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;

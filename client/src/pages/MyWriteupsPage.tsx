@@ -59,79 +59,78 @@ export const MyWriteupsPage = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My writeups</h1>
-        <Link to="/writeups/new" className="btn-primary">
-          + New writeup
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="flex items-center gap-2 font-mono text-2xl font-bold">
+          <span className="text-vio-400">➤</span> /me/writeups
+        </h1>
+        <Link to="/writeups/new" className="btn btn-primary text-xs">
+          + new writeup
         </Link>
       </div>
 
-      <div className="mt-4 flex gap-2">
+      <div className="mt-5 flex gap-2">
         {FILTERS.map(({ key, label }) => (
           <button
             key={key}
             onClick={() => setFilter(key)}
-            className={`rounded-full px-3 py-1 text-xs transition-colors ${
-              filter === key
-                ? "bg-emerald-500 text-slate-950"
-                : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-            }`}
+            className={`chip ${filter === key ? "chip-active" : ""}`}
           >
             {label}
           </button>
         ))}
       </div>
 
-      {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+      {error && <p className="mt-4 font-mono text-sm text-blood-400">{error}</p>}
 
       {loading ? (
-        <p className="py-16 text-center text-slate-400">Loading…</p>
+        <p className="cursor py-20 text-center font-mono text-ink-400">Loading…</p>
       ) : writeups.length === 0 ? (
-        <p className="py-16 text-center text-slate-500">
-          Nothing here yet.{" "}
-          <Link to="/writeups/new" className="text-emerald-300 hover:underline">
-            Write your first writeup
+        <p className="py-20 text-center font-mono text-ink-500">
+          // nothing here yet.{" "}
+          <Link to="/writeups/new" className="text-neon-400 hover:underline">
+            write your first writeup
           </Link>
-          .
         </p>
       ) : (
         <ul className="mt-6 space-y-3">
           {writeups.map((w) => (
-            <li key={w._id} className="card flex items-center gap-4">
+            <li key={w._id} className="panel flex flex-wrap items-center gap-4 p-4">
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{w.title}</p>
-                <p className="text-xs text-slate-500">
-                  updated {fmtDate(w.updatedAt)}
+                <p className="truncate font-mono text-sm font-medium text-ink-100">
+                  {w.title}
+                </p>
+                <p className="muted mt-1">
+                  [{w._id.slice(-4)}] · updated {fmtDate(w.updatedAt)}
                 </p>
               </div>
               <span
                 className={`badge ${
                   w.status === "draft"
-                    ? "bg-yellow-500/15 text-yellow-300"
-                    : "bg-emerald-500/15 text-emerald-300"
+                    ? "border-gold-400/40 bg-gold-400/10 text-gold-300"
+                    : "border-neon-500/40 bg-neon-500/10 text-neon-400"
                 }`}
               >
                 {w.status}
               </span>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {w.status === "published" && (
-                  <Link to={`/writeups/${w._id}`} className="btn-outline">
-                    View
+                  <Link to={`/writeups/${w._id}`} className="btn btn-outline text-xs">
+                    view
                   </Link>
                 )}
-                <Link to={`/writeups/${w._id}/edit`} className="btn-outline">
-                  Edit
+                <Link to={`/writeups/${w._id}/edit`} className="btn btn-outline text-xs">
+                  edit
                 </Link>
                 {w.status === "draft" && (
                   <button
-                    className="btn-primary"
+                    className="btn btn-primary text-xs"
                     onClick={() => void publish(w)}
                   >
-                    Publish
+                    publish
                   </button>
                 )}
-                <button className="btn-danger" onClick={() => void remove(w)}>
-                  Delete
+                <button className="btn btn-danger text-xs" onClick={() => void remove(w)}>
+                  rm
                 </button>
               </div>
             </li>

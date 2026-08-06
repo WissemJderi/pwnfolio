@@ -13,10 +13,10 @@ import {
 } from "../lib/format";
 
 const SECTIONS = [
-  { key: "recon", label: "Recon" },
-  { key: "approach", label: "Approach" },
-  { key: "exploitChain", label: "Exploit chain" },
-  { key: "takeaway", label: "Takeaway" },
+  { key: "recon", label: "recon", title: "Recon" },
+  { key: "approach", label: "approach", title: "Approach" },
+  { key: "exploitChain", label: "exploit-chain", title: "Exploit chain" },
+  { key: "takeaway", label: "takeaway", title: "Takeaway" },
 ] as const;
 
 export const WriteupPage = () => {
@@ -46,13 +46,15 @@ export const WriteupPage = () => {
 
   if (notFound) {
     return (
-      <p className="py-16 text-center text-slate-500">
-        Writeup not found or still in draft.
+      <p className="py-20 text-center font-mono text-ink-500">
+        $ open /writeups/{id} → 404: writeup not found or still in draft
       </p>
     );
   }
   if (!writeup) {
-    return <p className="py-16 text-center text-slate-400">Loading…</p>;
+    return (
+      <p className="cursor py-20 text-center font-mono text-ink-400">Loading…</p>
+    );
   }
 
   const author = typeof writeup.author === "string" ? null : writeup.author;
@@ -104,7 +106,15 @@ export const WriteupPage = () => {
 
   return (
     <article>
-      <div className="flex flex-wrap items-center gap-2 text-xs">
+      <p className="muted mb-4 truncate">
+        <Link to="/" className="text-ink-400 hover:text-neon-400">
+          ~/writeups
+        </Link>
+        /[{writeup._id.slice(-4)}]/
+        <span className="text-neon-500">{writeup.status}</span>
+      </p>
+
+      <div className="flex flex-wrap items-center gap-1.5 text-xs">
         <span className={`badge ${CATEGORY_BADGE[writeup.category]}`}>
           {CATEGORY_LABELS[writeup.category]}
         </span>
@@ -114,100 +124,156 @@ export const WriteupPage = () => {
           </span>
         )}
         {writeup.platform && (
-          <span className="badge bg-slate-700/40 text-slate-300">
+          <span className="badge border-line-700 bg-core-700/60 text-ink-400">
             {writeup.platform}
           </span>
         )}
         {isDraft && (
-          <span className="badge bg-yellow-500/15 text-yellow-300">
+          <span className="badge border-gold-400/40 bg-gold-400/10 text-gold-300">
             draft — only you can see this
           </span>
         )}
       </div>
 
-      <h1 className="mt-3 text-3xl font-bold">{writeup.title}</h1>
+      <h1 className="mt-3 text-3xl font-bold leading-tight">{writeup.title}</h1>
 
-      <p className="mt-2 text-sm text-slate-500">
-        by{" "}
-        {author ? (
-          <Link
-            to={`/users/${author.username}`}
-            className="text-slate-300 hover:text-emerald-300"
-          >
-            @{author.username}
-          </Link>
-        ) : (
-          "unknown"
-        )}{" "}
-        · {fmtDate(writeup.createdAt)}
+      <p className="mt-3 flex flex-wrap items-center gap-3 font-mono text-sm text-ink-500">
+        <span className="flex items-center gap-1.5">
+          <span className="flex h-6 w-6 items-center justify-center rounded border border-line-700 bg-core-700/60 text-[11px] text-neon-400">
+            {author?.username.slice(0, 1).toUpperCase() ?? "?"}
+          </span>
+          by{" "}
+          {author ? (
+            <Link
+              to={`/users/${author.username}`}
+              className="text-ink-300 hover:text-neon-400"
+            >
+              @{author.username}
+            </Link>
+          ) : (
+            "unknown"
+          )}
+        </span>
+        <span className="text-ink-500/60">·</span>
+        <span>{fmtDate(writeup.createdAt)}</span>
       </p>
 
-      <div className="mt-4 flex items-center gap-2">
+      <div className="mt-5 flex flex-wrap items-center gap-2 border-y border-line-800 py-3">
         <button
           onClick={() => void toggleLike()}
-          className={`btn ${writeup.isLikedByMe ? "btn-primary" : "btn-outline"}`}
+          className={`btn ${writeup.isLikedByMe ? "btn-primary" : "btn-outline"} text-xs`}
         >
           ♥ {writeup.likesCount ?? 0}
         </button>
         <button
           onClick={() => void toggleSave()}
-          className={`btn ${writeup.isSavedByMe ? "btn-primary" : "btn-outline"}`}
+          className={`btn ${writeup.isSavedByMe ? "btn-primary" : "btn-outline"} text-xs`}
         >
-          {writeup.isSavedByMe ? "Saved ✓" : "Save"}
+          {writeup.isSavedByMe ? "saved ✓" : "save"}
         </button>
         {isMine && (
-          <Link to={`/writeups/${writeup._id}/edit`} className="btn-outline">
-            Edit
+          <Link to={`/writeups/${writeup._id}/edit`} className="btn btn-outline text-xs">
+            edit
           </Link>
         )}
         {actionError && (
-          <span className="text-sm text-red-400">{actionError}</span>
+          <span className="font-mono text-xs text-blood-400">{actionError}</span>
         )}
       </div>
 
-      <div className="mt-6 space-y-6">
-        {SECTIONS.map(({ key, label }) => (
-          <section key={key}>
-            <h2 className="mb-2 text-xl font-semibold text-emerald-300">
-              {label}
-            </h2>
-            <div className="whitespace-pre-wrap text-sm leading-relaxed text-slate-300">
-              {writeup.sections[key]}
+      <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_230px]">
+        <div className="space-y-9">
+          {SECTIONS.map(({ key, label, title }) => (
+            <section key={key} id={label}>
+              <h2 className="section-head">
+                <span className="text-ink-500">##</span> {title}
+              </h2>
+              <div className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink-300">
+                {writeup.sections[key]}
+              </div>
+            </section>
+          ))}
+        </div>
+
+        <aside className="hidden lg:block">
+          <div className="sticky top-8 space-y-5">
+            <nav className="panel p-4">
+              <p className="muted mb-2 uppercase tracking-[0.2em]">contents</p>
+              <ul className="space-y-1.5 font-mono text-sm">
+                {SECTIONS.map(({ key, label, title }) => (
+                  <li key={key}>
+                    <a
+                      href={`#${label}`}
+                      className="inline-flex items-center gap-1.5 text-ink-400 hover:text-neon-400"
+                    >
+                      <span className="text-neon-500">›</span> {title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div className="panel p-4">
+              <p className="muted mb-2 uppercase tracking-[0.2em]">meta</p>
+              <dl className="space-y-2 font-mono text-xs">
+                <div className="flex justify-between">
+                  <dt className="text-ink-500">category</dt>
+                  <dd className="text-ink-300">
+                    {CATEGORY_LABELS[writeup.category]}
+                  </dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-ink-500">difficulty</dt>
+                  <dd className="text-ink-300">{writeup.difficulty ?? "—"}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-ink-500">platform</dt>
+                  <dd className="text-ink-300">{writeup.platform ?? "—"}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-ink-500">likes</dt>
+                  <dd className="text-neon-500">♥ {writeup.likesCount ?? 0}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-ink-500">comments</dt>
+                  <dd className="text-ink-300">💬 {writeup.commentCount ?? 0}</dd>
+                </div>
+              </dl>
             </div>
-          </section>
-        ))}
+
+            {writeup.tags.length > 0 && (
+              <div className="panel p-4">
+                <p className="muted mb-2 uppercase tracking-[0.2em]">tags</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {writeup.tags.map((tag) => (
+                    <span key={tag} className="tag">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {writeup.cveRefs.length > 0 && (
+              <div className="panel p-4">
+                <p className="muted mb-2 uppercase tracking-[0.2em]">cve refs</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {writeup.cveRefs.map((cve) => (
+                    <span
+                      key={cve}
+                      className="badge border-blood-400/40 bg-blood-400/10 text-blood-300"
+                    >
+                      {cve}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </aside>
       </div>
 
-      {writeup.tags.length > 0 && (
-        <div className="mt-6 flex flex-wrap gap-1">
-          {writeup.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded bg-slate-800 px-2 py-0.5 text-xs text-slate-400"
-            >
-              #{tag}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {writeup.cveRefs.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1">
-          {writeup.cveRefs.map((cve) => (
-            <span
-              key={cve}
-              className="rounded bg-red-950/40 px-2 py-0.5 text-xs text-red-300"
-            >
-              {cve}
-            </span>
-          ))}
-        </div>
-      )}
-
-      <Comments
-        writeupId={writeup._id}
-        onCountChange={setCommentCount}
-      />
+      <Comments writeupId={writeup._id} onCountChange={setCommentCount} />
     </article>
   );
 };

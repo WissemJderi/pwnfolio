@@ -123,20 +123,29 @@ export const EditorPage = () => {
     }
   };
 
-  if (loading) return <p className="py-16 text-center text-slate-400">Loading…</p>;
+  if (loading) {
+    return <p className="cursor py-20 text-center font-mono text-ink-400">Loading…</p>;
+  }
 
   if (notMine) {
     return (
-      <p className="py-16 text-center text-slate-500">
-        You can't edit someone else's writeup.
+      <p className="py-20 text-center font-mono text-ink-500">
+        $ sudo edit /writeups/{id} → permission denied: not your writeup
       </p>
     );
   }
 
   return (
     <div className="mx-auto max-w-3xl">
-      <h1 className="text-2xl font-bold">
-        {editing ? "Edit writeup" : "New writeup"}
+      <p className="muted mb-4 truncate">
+        $ vim ~/writeups/
+        <span className="text-neon-500">{editing ? form.title || "untitled" : "untitled"}</span>
+        {" .md"}
+        <span className="cursor" />
+      </p>
+      <h1 className="flex items-center gap-2 font-mono text-2xl font-bold">
+        <span className="text-vio-400">➤</span>
+        {editing ? "edit-writeup" : "new-writeup"}
       </h1>
 
       <form
@@ -147,7 +156,7 @@ export const EditorPage = () => {
         }}
       >
         <div>
-          <label className="mb-1 block text-sm text-slate-400">Title</label>
+          <label className="label">title</label>
           <input
             className="input"
             value={form.title}
@@ -158,7 +167,7 @@ export const EditorPage = () => {
 
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
-            <label className="mb-1 block text-sm text-slate-400">Category</label>
+            <label className="label">category</label>
             <select
               className="input"
               value={form.category}
@@ -172,7 +181,7 @@ export const EditorPage = () => {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-sm text-slate-400">Difficulty</label>
+            <label className="label">difficulty</label>
             <select
               className="input"
               value={form.difficulty}
@@ -187,7 +196,7 @@ export const EditorPage = () => {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-sm text-slate-400">Platform</label>
+            <label className="label">platform</label>
             <input
               className="input"
               placeholder="TryHackMe, HackTheBox…"
@@ -199,8 +208,8 @@ export const EditorPage = () => {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-sm text-slate-400">
-              Tags (comma separated)
+            <label className="label">
+              tags <span className="normal-case tracking-normal text-ink-500">/ comma separated</span>
             </label>
             <input
               className="input"
@@ -210,8 +219,8 @@ export const EditorPage = () => {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm text-slate-400">
-              CVE refs (comma separated)
+            <label className="label">
+              cve refs <span className="normal-case tracking-normal text-ink-500">/ comma separated</span>
             </label>
             <input
               className="input"
@@ -223,9 +232,10 @@ export const EditorPage = () => {
         </div>
 
         {SECTION_KEYS.map((key) => (
-          <div key={key}>
-            <label className="mb-1 block text-sm capitalize text-slate-400">
-              {key === "exploitChain" ? "Exploit chain" : key}
+          <div key={key} className="panel p-4">
+            <label className="label">
+              <span className="text-neon-500">## </span>
+              {key === "exploitChain" ? "exploit-chain" : key}
             </label>
             <textarea
               className="input min-h-32"
@@ -236,28 +246,28 @@ export const EditorPage = () => {
           </div>
         ))}
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p className="font-mono text-sm text-blood-400">{error}</p>}
 
-        <div className="flex items-center justify-end gap-2 pt-2">
+        <div className="flex flex-wrap items-center justify-end gap-2 border-t border-line-800 pt-4">
           {editing && (
             <button
               type="button"
-              className="btn-danger"
+              className="btn btn-danger text-xs"
               onClick={() => void remove()}
             >
-              Delete
+              rm
             </button>
           )}
           <button
             type="button"
-            className="btn-outline"
+            className="btn btn-outline text-xs"
             disabled={saving}
             onClick={() => void save("draft")}
           >
-            Save draft
+            :w draft
           </button>
-          <button type="submit" className="btn-primary" disabled={saving}>
-            {saving ? "Saving…" : editing ? "Update & publish" : "Publish"}
+          <button type="submit" className="btn btn-primary text-xs" disabled={saving}>
+            {saving ? ":wq…" : editing ? ":wq & publish" : ":wq publish"}
           </button>
         </div>
       </form>
