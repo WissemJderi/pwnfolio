@@ -138,6 +138,18 @@ describe("draft writeups", () => {
     const res = await request(app).get("/api/users/me/writeups");
     expect(res.status).toBe(401);
   });
+
+  it("hides drafts from the public profile", async () => {
+    const { user, accessToken } = await registerUser();
+    const draft = await createWriteup(accessToken, { status: "draft" });
+    await createWriteup(accessToken);
+
+    const res = await request(app).get(`/api/users/${user.username}`);
+    expect(res.status).toBe(200);
+    const ids = res.body.writeups.map((w: { _id: string }) => w._id);
+    expect(ids).not.toContain(draft.body._id);
+    expect(res.body.writeups).toHaveLength(1);
+  });
 });
 
 describe("writeup deletion cleanup", () => {

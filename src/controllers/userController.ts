@@ -1,6 +1,8 @@
 import { Response } from "express";
 import User from "../models/User";
 import Writeup from "../models/Writeup";
+import Like from "../models/Like";
+import Comment from "../models/Comment";
 import { AuthRequest } from "../middleware/authMiddleware";
 
 export const getPublicProfile = async (req: AuthRequest, res: Response) => {
@@ -12,11 +14,38 @@ export const getPublicProfile = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const writeups = await Writeup.find({ author: user._id })
+    const writeups = await Writeup.find({ author: user._id, status: "published" })
       .select("-sections") // exclude full body content from list view
       .sort({ createdAt: -1 });
 
-    res.json({ user, writeups });
+    const writeupIds = writeups.map((w) => w._id);
+
+    const [likeGroups, commentGroups] = await Promise.all([
+      Like.aggregate([
+        { $match: { writeup: { $in: writeupIds } } },
+        { $group: { _id: "$writeup", count: { $sum: 1 } } },
+      ]),
+      Comment.aggregate([
+        { $match: { writeup: { $in: writeupIds } } },
+        { $group: { _id: "$writeup", count: { $sum: 1 } } },
+      ]),
+    ]);
+
+    const likeCounts = new Map(
+      likeGroups.map((g) => [String(g._id), g.count]),
+    );
+    const commentCounts = new Map(
+      commentGroups.map((g) => [String(g._id), g.count]),
+    );
+
+    res.json({
+      user,
+      writeups: writeups.map((w) => ({
+        ...w.toObject(),
+        likesCount: likeCounts.get(String(w._id)) ?? 0,
+        commentCount: commentCounts.get(String(w._id)) ?? 0,
+      })),
+    });
   } catch (err) {
     res
       .status(500)

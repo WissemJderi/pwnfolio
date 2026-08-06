@@ -81,8 +81,32 @@ export const getWriteups = async (req: AuthRequest, res: Response) => {
       Writeup.countDocuments(filter),
     ]);
 
+    const writeupIds = writeups.map((w) => w._id);
+
+    const [likeGroups, commentGroups] = await Promise.all([
+      Like.aggregate([
+        { $match: { writeup: { $in: writeupIds } } },
+        { $group: { _id: "$writeup", count: { $sum: 1 } } },
+      ]),
+      Comment.aggregate([
+        { $match: { writeup: { $in: writeupIds } } },
+        { $group: { _id: "$writeup", count: { $sum: 1 } } },
+      ]),
+    ]);
+
+    const likeCounts = new Map(
+      likeGroups.map((g) => [String(g._id), g.count]),
+    );
+    const commentCounts = new Map(
+      commentGroups.map((g) => [String(g._id), g.count]),
+    );
+
     res.json({
-      writeups,
+      writeups: writeups.map((w) => ({
+        ...w.toObject(),
+        likesCount: likeCounts.get(String(w._id)) ?? 0,
+        commentCount: commentCounts.get(String(w._id)) ?? 0,
+      })),
       pagination: {
         page: pageNum,
         limit: limitNum,
@@ -109,6 +133,9 @@ export const getWriteupById = async (req: AuthRequest, res: Response) => {
     const isLikedByMe = req.userId
       ? !!(await Like.findOne({ user: req.userId, writeup: writeup._id }))
       : false;
+    const isSavedByMe = req.userId
+      ? !!(await SavedWriteup.findOne({ user: req.userId, writeup: writeup._id }))
+      : false;
     const commentCount = await Comment.countDocuments({
       writeup: writeup._id,
     });
@@ -117,6 +144,7 @@ export const getWriteupById = async (req: AuthRequest, res: Response) => {
       ...writeup.toObject(),
       likesCount,
       isLikedByMe,
+      isSavedByMe,
       commentCount,
     });
   } catch (err) {

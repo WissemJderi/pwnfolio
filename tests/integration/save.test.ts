@@ -89,6 +89,27 @@ describe("DELETE /api/writeups/:id/save", () => {
   });
 });
 
+describe("writeup detail save state", () => {
+  it("reports isSavedByMe on the detail endpoint", async () => {
+    const { accessToken } = await registerUser();
+    const created = await createWriteup(accessToken);
+
+    const before = await request(app)
+      .get(`/api/writeups/${created.body._id}`)
+      .set("Authorization", `Bearer ${accessToken}`);
+    expect(before.body.isSavedByMe).toBe(false);
+
+    await request(app)
+      .post(`/api/writeups/${created.body._id}/save`)
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    const after = await request(app)
+      .get(`/api/writeups/${created.body._id}`)
+      .set("Authorization", `Bearer ${accessToken}`);
+    expect(after.body.isSavedByMe).toBe(true);
+  });
+});
+
 describe("GET /api/users/me/saved", () => {
   it("returns 401 without a token", async () => {
     const res = await request(app).get("/api/users/me/saved");
