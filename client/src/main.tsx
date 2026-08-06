@@ -5,6 +5,10 @@ import "./index.css";
 import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 
+const saved = localStorage.getItem("pf-theme");
+document.documentElement.dataset.theme =
+  saved === "dark" || saved === "light" || saved === "hacker" ? saved : "dark";
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>

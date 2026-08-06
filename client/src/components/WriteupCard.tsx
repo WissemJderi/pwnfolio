@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
-import { Heart, MessageSquare } from "lucide-react";
+import { motion } from "framer-motion";
+import { Clock, Heart, MessageSquare } from "lucide-react";
 import type { Writeup } from "../api/types";
 import {
   CATEGORY_BADGE,
   CATEGORY_LABELS,
   DIFFICULTY_BADGE,
   fmtDate,
+  readTime,
 } from "../lib/format";
 
 export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
@@ -13,7 +15,11 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
     typeof writeup.author === "string" ? null : writeup.author;
 
   return (
-    <article className="panel group flex flex-col gap-3 p-4 transition-all duration-150 hover:-translate-y-0.5 hover:border-neon-500/40 hover:shadow-[0_0_24px_-8px_rgba(158,239,0,0.35)]">
+    <motion.article
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.995 }}
+      className="panel group flex flex-col gap-3 p-4 transition-[border-color,box-shadow] duration-150 hover:border-neon-500/40 hover:shadow-[0_0_24px_-8px_rgba(var(--pf-glow),0.35)]"
+    >
       <div className="flex items-center gap-1.5 text-xs">
         <span className={`badge ${CATEGORY_BADGE[writeup.category]}`}>
           {CATEGORY_LABELS[writeup.category]}
@@ -78,6 +84,9 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
           <span className="shrink-0">{fmtDate(writeup.createdAt)}</span>
         </span>
         <span className="flex shrink-0 items-center gap-3">
+          <span className="flex items-center gap-1 text-ink-500">
+            <Clock size={13} /> ~{readTime(writeup)} min
+          </span>
           <span className="flex items-center gap-1 text-neon-500">
             <Heart size={13} fill="currentColor" /> {writeup.likesCount ?? 0}
           </span>
@@ -86,6 +95,6 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
           </span>
         </span>
       </div>
-    </article>
+    </motion.article>
   );
 };

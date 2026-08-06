@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { api } from "../api/client";
 import type { PublicProfile } from "../api/types";
 import { WriteupCard } from "../components/WriteupCard";
+import { Stagger, StaggerItem } from "../components/Stagger";
+import { Skeleton, GridSkeleton } from "../components/Skeleton";
 import { fmtDate } from "../lib/format";
 
 export const ProfilePage = () => {
@@ -25,7 +27,26 @@ export const ProfilePage = () => {
 
   if (loading) {
     return (
-      <p className="cursor py-20 text-center font-mono text-ink-400">Loading…</p>
+      <div>
+        <div className="panel grid-bg p-6">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-16 w-16" />
+            <div className="flex-1 space-y-2.5">
+              <Skeleton className="h-6 w-44" />
+              <Skeleton className="h-4 w-64 max-w-full" />
+            </div>
+          </div>
+          <Skeleton className="mt-4 h-16 w-full" />
+          <div className="mt-4 flex gap-1.5">
+            <Skeleton className="h-5 w-14" />
+            <Skeleton className="h-5 w-11" />
+          </div>
+        </div>
+        <h2 className="mt-8 mb-1 flex items-center gap-2">
+          <Skeleton className="h-5 w-40" />
+        </h2>
+        <GridSkeleton count={2} />
+      </div>
     );
   }
 
@@ -43,7 +64,7 @@ export const ProfilePage = () => {
     <div>
       <div className="panel grid-bg p-6">
         <div className="flex items-center gap-4">
-          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-sm border border-neon-500/40 bg-neon-500/10 font-mono text-3xl font-bold text-neon-400 shadow-[0_0_20px_-6px_rgba(158,239,0,0.5)]">
+          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-sm border border-neon-500/40 bg-neon-500/10 font-mono text-3xl font-bold text-neon-400 shadow-[0_0_20px_-6px_rgba(var(--pf-glow),0.5)]">
             {profile.user.username.slice(0, 1).toUpperCase()}
           </span>
           <div className="min-w-0">
@@ -86,11 +107,13 @@ export const ProfilePage = () => {
           // no published writeups yet
         </p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <Stagger className="grid gap-4 sm:grid-cols-2">
           {profile.writeups.map((w) => (
-            <WriteupCard key={w._id} writeup={w} />
+            <StaggerItem key={w._id}>
+              <WriteupCard writeup={w} />
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       )}
 
       {profile.writeups.length > 0 && (

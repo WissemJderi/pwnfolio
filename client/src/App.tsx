@@ -1,5 +1,7 @@
-import { Route, Routes, Outlet } from "react-router-dom";
+import { useLocation, Route, Routes, Outlet } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import { Sidebar } from "./components/Sidebar";
+import { PageTransition } from "./components/PageTransition";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { HomePage } from "./pages/HomePage";
 import { WriteupPage } from "./pages/WriteupPage";
@@ -24,40 +26,91 @@ const Layout = () => (
 );
 
 export default function App() {
+  const location = useLocation();
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/writeups/:id" element={<WriteupPage />} />
-        <Route
-          path="/writeups/new"
-          element={
-            <ProtectedRoute>
-              <EditorPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/writeups/:id/edit"
-          element={
-            <ProtectedRoute>
-              <EditorPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/me/writeups"
-          element={
-            <ProtectedRoute>
-              <MyWriteupsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/users/:username" element={<ProfilePage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Route>
-    </Routes>
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route element={<Layout />}>
+          <Route
+            path="/"
+            element={
+              <PageTransition>
+                <HomePage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <PageTransition>
+                <LoginPage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PageTransition>
+                <RegisterPage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/writeups/:id"
+            element={
+              <PageTransition>
+                <WriteupPage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/writeups/new"
+            element={
+              <ProtectedRoute>
+                <PageTransition>
+                  <EditorPage />
+                </PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/writeups/:id/edit"
+            element={
+              <ProtectedRoute>
+                <PageTransition>
+                  <EditorPage />
+                </PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/me/writeups"
+            element={
+              <ProtectedRoute>
+                <PageTransition>
+                  <MyWriteupsPage />
+                </PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users/:username"
+            element={
+              <PageTransition>
+                <ProfilePage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="*"
+            element={
+              <PageTransition>
+                <NotFoundPage />
+              </PageTransition>
+            }
+          />
+        </Route>
+      </Routes>
+    </AnimatePresence>
   );
 }

@@ -4,6 +4,8 @@ import { api } from "../api/client";
 import type { Category, Difficulty, WriteupListResponse } from "../api/types";
 import { CATEGORY_LABELS } from "../lib/format";
 import { WriteupCard } from "../components/WriteupCard";
+import { Stagger, StaggerItem } from "../components/Stagger";
+import { GridSkeleton } from "../components/Skeleton";
 
 const CATEGORIES = Object.keys(CATEGORY_LABELS) as Category[];
 const DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard", "insane"];
@@ -102,17 +104,19 @@ export const HomePage = () => {
       </section>
 
       {loading ? (
-        <p className="cursor py-20 text-center font-mono text-ink-400">Loading…</p>
+        <GridSkeleton />
       ) : writeups.length === 0 ? (
         <p className="py-20 text-center font-mono text-ink-500">
           no matches in index — try clearing the filters
         </p>
       ) : (
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <Stagger className="mt-6 grid gap-4 sm:grid-cols-2">
           {writeups.map((w) => (
-            <WriteupCard key={w._id} writeup={w} />
+            <StaggerItem key={w._id}>
+              <WriteupCard writeup={w} />
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       )}
 
       {pagination && pagination.totalPages > 1 && (

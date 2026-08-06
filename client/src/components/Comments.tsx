@@ -5,6 +5,7 @@ import { api } from "../api/client";
 import type { CommentWithReplies } from "../api/types";
 import { useAuth } from "../context/AuthContext";
 import { fmtDate } from "../lib/format";
+import { Skeleton } from "./Skeleton";
 
 interface CommentsProps {
   writeupId: string;
@@ -70,9 +71,21 @@ export const Comments = ({ writeupId, onCountChange }: CommentsProps) => {
 
   if (loading) {
     return (
-      <p className="cursor mt-8 font-mono text-sm text-ink-500">
-        $ tail -f discussion.log…
-      </p>
+      <section className="mt-12 border-t border-line-800 pt-8">
+        <Skeleton className="h-5 w-32" />
+        <div className="mt-6 space-y-4">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="flex gap-3">
+              <Skeleton className="h-8 w-8 shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-3.5 w-48" />
+                <Skeleton className="h-3.5 w-full" />
+                <Skeleton className="h-3.5 w-3/4" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
     );
   }
   if (error && comments.length === 0) {

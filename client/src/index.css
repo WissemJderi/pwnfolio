@@ -8,35 +8,155 @@
     ui-monospace, SFMono-Regular, "JetBrains Mono", "Fira Code", Menlo,
     Consolas, "Liberation Mono", monospace;
 
-  --color-core-950: #05070d;
-  --color-core-900: #0a0d16;
-  --color-core-850: #10141f;
-  --color-core-800: #151a2a;
-  --color-core-700: #1d2338;
+  --color-core-950: var(--pf-core-950);
+  --color-core-900: var(--pf-core-900);
+  --color-core-850: var(--pf-core-850);
+  --color-core-800: var(--pf-core-800);
+  --color-core-700: var(--pf-core-700);
 
-  --color-line-800: #1b2133;
-  --color-line-700: #27304b;
+  --color-line-800: var(--pf-line-800);
+  --color-line-700: var(--pf-line-700);
 
-  --color-ink-100: #eef3ff;
-  --color-ink-200: #e2e9f7;
-  --color-ink-300: #c1cbdf;
-  --color-ink-400: #97a4c0;
-  --color-ink-500: #6e7d9c;
+  --color-ink-100: var(--pf-ink-100);
+  --color-ink-200: var(--pf-ink-200);
+  --color-ink-300: var(--pf-ink-300);
+  --color-ink-400: var(--pf-ink-400);
+  --color-ink-500: var(--pf-ink-500);
 
-  --color-neon-300: #c9f542;
-  --color-neon-400: #b7ef1f;
-  --color-neon-500: #9fef00;
-  --color-neon-600: #7acb00;
+  --color-neon-300: var(--pf-neon-300);
+  --color-neon-400: var(--pf-neon-400);
+  --color-neon-500: var(--pf-neon-500);
+  --color-neon-600: var(--pf-neon-600);
 
-  --color-vio-300: #b4a8ff;
-  --color-vio-400: #9d8cff;
-  --color-vio-500: #7c6ef0;
+  --color-vio-300: var(--pf-vio-300);
+  --color-vio-400: var(--pf-vio-400);
+  --color-vio-500: var(--pf-vio-500);
 
-  --color-gold-300: #ffe08a;
-  --color-gold-400: #ffd166;
+  --color-gold-300: var(--pf-gold-300);
+  --color-gold-400: var(--pf-gold-400);
 
-  --color-blood-300: #ff8fa7;
-  --color-blood-400: #ff5470;
+  --color-blood-300: var(--pf-blood-300);
+  --color-blood-400: var(--pf-blood-400);
+}
+
+/* ---------- dark (default) ---------- */
+:root {
+  color-scheme: dark;
+
+  --pf-core-950: #05070d;
+  --pf-core-900: #0a0d16;
+  --pf-core-850: #10141f;
+  --pf-core-800: #151a2a;
+  --pf-core-700: #1d2338;
+
+  --pf-line-800: #1b2133;
+  --pf-line-700: #27304b;
+
+  --pf-ink-100: #eef3ff;
+  --pf-ink-200: #e2e9f7;
+  --pf-ink-300: #c1cbdf;
+  --pf-ink-400: #97a4c0;
+  --pf-ink-500: #6e7d9c;
+
+  --pf-neon-300: #c9f542;
+  --pf-neon-400: #b7ef1f;
+  --pf-neon-500: #9fef00;
+  --pf-neon-600: #7acb00;
+
+  --pf-vio-300: #b4a8ff;
+  --pf-vio-400: #9d8cff;
+  --pf-vio-500: #7c6ef0;
+
+  --pf-gold-300: #ffe08a;
+  --pf-gold-400: #ffd166;
+
+  --pf-blood-300: #ff8fa7;
+  --pf-blood-400: #ff5470;
+
+  --pf-glow: 158, 239, 0;
+  --pf-selection: rgba(158, 239, 0, 0.22);
+  --pf-selection-fg: #ffffff;
+  --pf-scrollbar: #242d49;
+}
+
+/* ---------- light ---------- */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --pf-core-950: #f4f6fa;
+  --pf-core-900: #ffffff;
+  --pf-core-850: #eef1f7;
+  --pf-core-800: #e6ebf3;
+  --pf-core-700: #d9e1ed;
+
+  --pf-line-800: #dbe3ee;
+  --pf-line-700: #c2cdddf;
+
+  --pf-ink-100: #0d1523;
+  --pf-ink-200: #1a2538;
+  --pf-ink-300: #35465e;
+  --pf-ink-400: #5d6f8a;
+  --pf-ink-500: #7c8ca6;
+
+  --pf-neon-300: #5f8f00;
+  --pf-neon-400: #507f00;
+  --pf-neon-500: #406b00;
+  --pf-neon-600: #2f4f00;
+
+  --pf-vio-300: #6f5ce2;
+  --pf-vio-400: #5d4acd;
+  --pf-vio-500: #4b3ab5;
+
+  --pf-gold-300: #a67c00;
+  --pf-gold-400: #8f6a00;
+
+  --pf-blood-300: #dc3d63;
+  --pf-blood-400: #c02452;
+
+  --pf-glow: 64, 107, 0;
+  --pf-selection: rgba(64, 107, 0, 0.16);
+  --pf-selection-fg: #0a101c;
+  --pf-scrollbar: #c4cedf;
+}
+
+/* ---------- hacker (amber phosphor) ---------- */
+:root[data-theme="hacker"] {
+  color-scheme: dark;
+
+  --pf-core-950: #0b0905;
+  --pf-core-900: #151109;
+  --pf-core-850: #1e190e;
+  --pf-core-800: #292212;
+  --pf-core-700: #38301c;
+
+  --pf-line-800: #2e2816;
+  --pf-line-700: #4a4325;
+
+  --pf-ink-100: #fff2cf;
+  --pf-ink-200: #ffe8aa;
+  --pf-ink-300: #e8cd85;
+  --pf-ink-400: #b19d5f;
+  --pf-ink-500: #8a7a4a;
+
+  --pf-neon-300: #ffd75e;
+  --pf-neon-400: #ffc226;
+  --pf-neon-500: #ffad00;
+  --pf-neon-600: #cc8800;
+
+  --pf-vio-300: #ffc45a;
+  --pf-vio-400: #ffb224;
+  --pf-vio-500: #e29a00;
+
+  --pf-gold-300: #ffd98c;
+  --pf-gold-400: #f0be4a;
+
+  --pf-blood-300: #ff9f6b;
+  --pf-blood-400: #ff7a45;
+
+  --pf-glow: 255, 173, 0;
+  --pf-selection: rgba(255, 173, 0, 0.22);
+  --pf-selection-fg: #0b0905;
+  --pf-scrollbar: #4a4325;
 }
 
 html {
@@ -47,26 +167,26 @@ html {
 body {
   @apply bg-core-950 font-sans text-ink-200 antialiased;
   background-image:
-    radial-gradient(1100px 460px at 50% -12%, rgba(158, 239, 0, 0.055), transparent 60%),
-    radial-gradient(900px 500px at 100% 0%, rgba(124, 110, 240, 0.04), transparent 55%);
+    radial-gradient(1100px 460px at 50% -12%, rgba(var(--pf-glow), 0.055), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(var(--pf-glow), 0.04), transparent 55%);
   background-repeat: no-repeat;
 }
 
 ::selection {
-  background: rgba(158, 239, 0, 0.22);
-  color: #fff;
+  background: var(--pf-selection);
+  color: var(--pf-selection-fg);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #242d49 transparent;
+  scrollbar-color: var(--pf-scrollbar) transparent;
 }
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #242d49;
+  background: var(--pf-scrollbar);
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: content-box;
@@ -78,10 +198,14 @@ body {
 @layer components {
   /* ---------- buttons ---------- */
   .btn {
-    @apply inline-flex select-none items-center justify-center gap-2 rounded-sm px-3.5 py-2 font-mono text-sm font-medium transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-40;
+    @apply inline-flex select-none cursor-pointer items-center justify-center gap-2 rounded-sm px-3.5 py-2 font-mono text-sm font-medium transition-all duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40;
   }
   .btn-primary {
-    @apply border border-neon-500/40 bg-neon-500 text-core-950 shadow-[0_0_14px_-4px_rgba(158,239,0,0.55)] hover:bg-neon-400 hover:shadow-[0_0_18px_-2px_rgba(158,239,0,0.7)];
+    @apply border border-neon-500/40 bg-neon-500 text-core-950 hover:bg-neon-400;
+    box-shadow: 0 0 14px -4px rgba(var(--pf-glow), 0.55);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 18px -2px rgba(var(--pf-glow), 0.7);
   }
   .btn-outline {
     @apply border border-line-700 bg-core-800/50 text-ink-300 hover:border-neon-500/50 hover:bg-core-700/50 hover:text-neon-300;
@@ -114,7 +238,7 @@ body {
     @apply inline-flex items-center gap-1 rounded-[3px] border border-line-700/60 px-2 py-0.5 font-mono text-[11px] font-medium tracking-wide;
   }
   .chip {
-    @apply inline-flex items-center gap-1 rounded-sm border border-line-700 bg-core-800/50 px-3 py-1 font-mono text-xs text-ink-400 transition-colors hover:border-neon-500/40 hover:text-neon-300;
+    @apply inline-flex cursor-pointer items-center gap-1 rounded-sm border border-line-700 bg-core-800/50 px-3 py-1 font-mono text-xs text-ink-400 transition-all duration-150 active:scale-[0.96] hover:border-neon-500/40 hover:text-neon-300;
   }
   .chip-active {
     @apply border-neon-500/60 bg-neon-500/10 text-neon-400;
@@ -132,9 +256,19 @@ body {
   }
   .grid-bg {
     background-image:
-      linear-gradient(rgba(158, 239, 0, 0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(158, 239, 0, 0.035) 1px, transparent 1px);
+      linear-gradient(rgba(var(--pf-glow), 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--pf-glow), 0.035) 1px, transparent 1px);
     background-size: 34px 34px;
+    animation: grid-drift 90s linear infinite;
+  }
+}
+
+@keyframes grid-drift {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 0 -34px, 34px 0;
   }
 }
 
@@ -152,4 +286,14 @@ body {
   content: "▋";
   @apply ml-0.5 text-neon-500;
   animation: blinker 1.15s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

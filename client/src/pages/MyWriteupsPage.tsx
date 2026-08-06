@@ -4,6 +4,7 @@ import { Eye, Pencil, Plus, Rocket, SquarePen, Trash2 } from "lucide-react";
 import { api } from "../api/client";
 import type { Writeup, WriteupStatus } from "../api/types";
 import { fmtDate } from "../lib/format";
+import { RowSkeleton } from "../components/Skeleton";
 
 type Filter = "all" | WriteupStatus;
 
@@ -84,7 +85,11 @@ export const MyWriteupsPage = () => {
       {error && <p className="mt-4 font-mono text-sm text-blood-400">{error}</p>}
 
       {loading ? (
-        <p className="cursor py-20 text-center font-mono text-ink-400">Loading…</p>
+        <ul className="mt-6 space-y-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <RowSkeleton key={i} />
+          ))}
+        </ul>
       ) : writeups.length === 0 ? (
         <p className="py-20 text-center font-mono text-ink-500">
           // nothing here yet.{" "}

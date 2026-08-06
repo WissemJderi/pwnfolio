@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Bookmark,
   ChevronRight,
+  Clock,
   Heart,
   MessageSquare,
   Pencil,
@@ -11,12 +12,14 @@ import { api } from "../api/client";
 import type { Writeup } from "../api/types";
 import { useAuth } from "../context/AuthContext";
 import { Comments } from "../components/Comments";
+import { Skeleton, SectionSkeleton } from "../components/Skeleton";
 import {
   CATEGORY_BADGE,
   CATEGORY_LABELS,
   DIFFICULTY_BADGE,
   fmtDate,
   getAuthorId,
+  readTime,
 } from "../lib/format";
 
 const SECTIONS = [
@@ -60,7 +63,48 @@ export const WriteupPage = () => {
   }
   if (!writeup) {
     return (
-      <p className="cursor py-20 text-center font-mono text-ink-400">Loading…</p>
+      <article>
+        <Skeleton className="h-3 w-44" />
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          <Skeleton className="h-5 w-16" />
+          <Skeleton className="h-5 w-12" />
+          <Skeleton className="h-5 w-14" />
+        </div>
+        <Skeleton className="mt-4 h-9 w-2/3" />
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <Skeleton className="h-4 w-40" />
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <div className="mt-5 flex flex-wrap gap-2 border-y border-line-800 py-3">
+          <Skeleton className="h-8 w-24" />
+          <Skeleton className="h-8 w-20" />
+        </div>
+
+        <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_230px]">
+          <div className="space-y-9">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SectionSkeleton key={i} />
+            ))}
+          </div>
+          <aside className="hidden lg:block">
+            <div className="sticky top-8 space-y-5">
+              <div className="panel space-y-3 p-4">
+                <Skeleton className="h-4 w-20" />
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-3.5 w-full" />
+                ))}
+              </div>
+              <div className="panel space-y-3 p-4">
+                <Skeleton className="h-4 w-16" />
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-3 w-full" />
+                ))}
+              </div>
+            </div>
+          </aside>
+        </div>
+      </article>
     );
   }
 
@@ -163,6 +207,10 @@ export const WriteupPage = () => {
         </span>
         <span className="text-ink-500/60">·</span>
         <span>{fmtDate(writeup.createdAt)}</span>
+        <span className="text-ink-500/60">·</span>
+        <span className="flex items-center gap-1">
+          <Clock size={12} /> ~{readTime(writeup)} min read
+        </span>
       </p>
 
       <div className="mt-5 flex flex-wrap items-center gap-2 border-y border-line-800 py-3">

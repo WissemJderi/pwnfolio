@@ -1,4 +1,4 @@
-import type { Category, Difficulty } from "../api/types";
+import type { Category, Difficulty, Writeup } from "../api/types";
 
 export const fmtDate = (iso: string): string =>
   new Date(iso).toLocaleDateString(undefined, {
@@ -38,3 +38,11 @@ export const getAuthorId = (writeup: {
   typeof writeup.author === "string"
     ? writeup.author
     : (writeup.author as { _id?: string })?._id;
+
+export const readTime = (writeup: Pick<Writeup, "title" | "sections">): number => {
+  const words = [writeup.title, ...Object.values(writeup.sections)]
+    .join(" ")
+    .split(/\s+/)
+    .filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+};

@@ -1,6 +1,8 @@
 import { Link, NavLink } from "react-router-dom";
+import { motion } from "framer-motion";
 import { BookOpen, Files, LogOut, Plus, Terminal } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { ThemeToggle } from "./ThemeToggle";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   `group flex items-center gap-2 rounded-sm border px-3 py-2 font-mono text-sm transition-colors ${
@@ -39,9 +41,13 @@ export const Sidebar = () => {
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col border-r border-line-800 bg-core-900/80 backdrop-blur lg:flex">
         <div className="px-5 pb-4 pt-6">
           <Link to="/" className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-sm border border-neon-500/40 bg-neon-500/10 text-neon-400 shadow-[0_0_14px_-4px_rgba(158,239,0,0.6)]">
+            <motion.span
+              whileHover={{ rotate: -8, scale: 1.08 }}
+              transition={{ type: "spring", stiffness: 320, damping: 16 }}
+              className="flex h-9 w-9 items-center justify-center rounded-sm border border-neon-500/40 bg-neon-500/10 text-neon-400 shadow-[0_0_14px_-4px_rgba(var(--pf-glow),0.6)]"
+            >
               <Terminal size={18} />
-            </span>
+            </motion.span>
             <span className="font-mono text-xl font-semibold tracking-tight">
               pwn<span className="text-neon-400">folio</span>
             </span>
@@ -96,10 +102,15 @@ export const Sidebar = () => {
             </div>
           )}
 
+          <ThemeToggle />
+
           <p className="flex items-center justify-between font-mono text-[10px] text-ink-500">
             <span>ne0n-core v1.0.0</span>
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-neon-500 shadow-[0_0_6px_rgba(158,239,0,0.9)]" />
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-neon-500 opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-neon-500 shadow-[0_0_6px_rgba(var(--pf-glow),0.9)]" />
+              </span>
               online
             </span>
           </p>
@@ -142,6 +153,7 @@ export const Sidebar = () => {
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-3">
           {links}
+          <ThemeToggle />
         </nav>
       </header>
     </>

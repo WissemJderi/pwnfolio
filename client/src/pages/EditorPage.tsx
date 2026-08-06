@@ -10,6 +10,7 @@ import type {
 } from "../api/types";
 import { useAuth } from "../context/AuthContext";
 import { getAuthorId } from "../lib/format";
+import { FormSkeleton } from "../components/Skeleton";
 
 const CATEGORIES: Category[] = ["web", "pwn", "crypto", "forensics", "osint", "misc"];
 const DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard", "insane"];
@@ -125,7 +126,7 @@ export const EditorPage = () => {
   };
 
   if (loading) {
-    return <p className="cursor py-20 text-center font-mono text-ink-400">Loading…</p>;
+    return <FormSkeleton />;
   }
 
   if (notMine) {
