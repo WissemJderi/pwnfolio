@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Clock, Heart, MessageSquare } from "lucide-react";
+import { TbClock, TbEye, TbHeart, TbMessageCircle } from "react-icons/tb";
 import type { Writeup } from "../api/types";
 import {
   CATEGORY_BADGE,
@@ -18,9 +18,9 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
     <motion.article
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.995 }}
-      className="panel group flex flex-col gap-3 p-4 transition-[border-color,box-shadow] duration-150 hover:border-neon-500/40 hover:shadow-[0_0_24px_-8px_rgba(var(--pf-glow),0.35)]"
+      className="panel group flex flex-col gap-3 p-4 transition-[border-color,box-shadow] duration-150 hover:border-neon-500/40 hover:shadow-[0_0_24px_-8px_rgba(var(--pf-glow),0.22)]"
     >
-      <div className="flex items-center gap-1.5 text-xs">
+      <div className="flex flex-wrap items-center gap-1.5 text-xs">
         <span className={`badge ${CATEGORY_BADGE[writeup.category]}`}>
           {CATEGORY_LABELS[writeup.category]}
         </span>
@@ -63,7 +63,7 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
         </div>
       )}
 
-      <div className="mt-auto flex items-center justify-between border-t border-line-800 pt-2.5 font-mono text-xs text-ink-500">
+      <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-line-800 pt-2.5 font-mono text-xs text-ink-500">
         <span className="flex min-w-0 items-center gap-1.5">
           {author ? (
             <>
@@ -83,15 +83,18 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
           <span className="text-ink-500/60">·</span>
           <span className="shrink-0">{fmtDate(writeup.createdAt)}</span>
         </span>
-        <span className="flex shrink-0 items-center gap-3">
+        <span className="flex items-center gap-3">
           <span className="flex items-center gap-1 text-ink-500">
-            <Clock size={13} /> ~{readTime(writeup)} min
+            <TbEye size={14} /> {writeup.views ?? 0}
+          </span>
+          <span className="flex items-center gap-1 text-ink-500">
+            <TbClock size={14} /> ~{readTime(writeup)} min
           </span>
           <span className="flex items-center gap-1 text-neon-500">
-            <Heart size={13} fill="currentColor" /> {writeup.likesCount ?? 0}
+            <TbHeart size={14} fill="currentColor" /> {writeup.likesCount ?? 0}
           </span>
           <span className="flex items-center gap-1 text-ink-400">
-            <MessageSquare size={13} /> {writeup.commentCount ?? 0}
+            <TbMessageCircle size={14} /> {writeup.commentCount ?? 0}
           </span>
         </span>
       </div>

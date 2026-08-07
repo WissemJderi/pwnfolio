@@ -1,21 +1,55 @@
+import { lazy, Suspense, type ReactNode } from "react";
 import { useLocation, Route, Routes, Outlet } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { Sidebar } from "./components/Sidebar";
 import { PageTransition } from "./components/PageTransition";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { HomePage } from "./pages/HomePage";
-import { WriteupPage } from "./pages/WriteupPage";
-import { EditorPage } from "./pages/EditorPage";
-import { MyWriteupsPage } from "./pages/MyWriteupsPage";
-import { ProfilePage } from "./pages/ProfilePage";
-import { LoginPage, RegisterPage } from "./pages/AuthPages";
-import { NotFoundPage } from "./pages/NotFoundPage";
+
+const WriteupPage = lazy(() =>
+  import("./pages/WriteupPage").then((m) => ({ default: m.WriteupPage })),
+);
+const EditorPage = lazy(() =>
+  import("./pages/EditorPage").then((m) => ({ default: m.EditorPage })),
+);
+const MyWriteupsPage = lazy(() =>
+  import("./pages/MyWriteupsPage").then((m) => ({ default: m.MyWriteupsPage })),
+);
+const SavedWriteupsPage = lazy(() =>
+  import("./pages/SavedWriteupsPage").then((m) => ({ default: m.SavedWriteupsPage })),
+);
+const ProfilePage = lazy(() =>
+  import("./pages/ProfilePage").then((m) => ({ default: m.ProfilePage })),
+);
+const StatsPage = lazy(() =>
+  import("./pages/StatsPage").then((m) => ({ default: m.StatsPage })),
+);
+const LoginPage = lazy(() =>
+  import("./pages/AuthPages").then((m) => ({ default: m.LoginPage })),
+);
+const RegisterPage = lazy(() =>
+  import("./pages/AuthPages").then((m) => ({ default: m.RegisterPage })),
+);
+const NotFoundPage = lazy(() =>
+  import("./pages/NotFoundPage").then((m) => ({ default: m.NotFoundPage })),
+);
+
+const PageLoader = () => (
+  <div className="py-24 text-center font-mono text-sm text-ink-500">
+    <span className="text-neon-400">$</span> cat ./page.bundle…
+    <span className="cursor" />
+  </div>
+);
+
+const Lazy = ({ children }: { children: ReactNode }) => (
+  <Suspense fallback={<PageLoader />}>{children}</Suspense>
+);
 
 const Layout = () => (
   <div className="min-h-screen">
     <Sidebar />
-    <div className="flex min-h-screen flex-col lg:pl-72">
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 md:px-8">
+    <div className="flex min-h-screen flex-col lg:pl-60 xl:pl-72">
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 md:px-8">
         <Outlet />
       </main>
       <footer className="border-t border-line-800 px-6 py-6 text-center font-mono text-xs text-ink-500">
@@ -43,7 +77,9 @@ export default function App() {
             path="/login"
             element={
               <PageTransition>
-                <LoginPage />
+                <Lazy>
+                  <LoginPage />
+                </Lazy>
               </PageTransition>
             }
           />
@@ -51,7 +87,9 @@ export default function App() {
             path="/register"
             element={
               <PageTransition>
-                <RegisterPage />
+                <Lazy>
+                  <RegisterPage />
+                </Lazy>
               </PageTransition>
             }
           />
@@ -59,7 +97,9 @@ export default function App() {
             path="/writeups/:id"
             element={
               <PageTransition>
-                <WriteupPage />
+                <Lazy>
+                  <WriteupPage />
+                </Lazy>
               </PageTransition>
             }
           />
@@ -68,7 +108,9 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <PageTransition>
-                  <EditorPage />
+                  <Lazy>
+                    <EditorPage />
+                  </Lazy>
                 </PageTransition>
               </ProtectedRoute>
             }
@@ -78,7 +120,9 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <PageTransition>
-                  <EditorPage />
+                  <Lazy>
+                    <EditorPage />
+                  </Lazy>
                 </PageTransition>
               </ProtectedRoute>
             }
@@ -88,7 +132,21 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <PageTransition>
-                  <MyWriteupsPage />
+                  <Lazy>
+                    <MyWriteupsPage />
+                  </Lazy>
+                </PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/me/saved"
+            element={
+              <ProtectedRoute>
+                <PageTransition>
+                  <Lazy>
+                    <SavedWriteupsPage />
+                  </Lazy>
                 </PageTransition>
               </ProtectedRoute>
             }
@@ -97,7 +155,19 @@ export default function App() {
             path="/users/:username"
             element={
               <PageTransition>
-                <ProfilePage />
+                <Lazy>
+                  <ProfilePage />
+                </Lazy>
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/users/:username/stats"
+            element={
+              <PageTransition>
+                <Lazy>
+                  <StatsPage />
+                </Lazy>
               </PageTransition>
             }
           />
@@ -105,7 +175,9 @@ export default function App() {
             path="*"
             element={
               <PageTransition>
-                <NotFoundPage />
+                <Lazy>
+                  <NotFoundPage />
+                </Lazy>
               </PageTransition>
             }
           />

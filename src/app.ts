@@ -3,6 +3,7 @@ import { requireAuth, AuthRequest } from "./middleware/authMiddleware";
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
+import { apiLimiter } from "./middleware/rateLimit";
 import authRoutes from "./routes/authRoutes";
 import writeupRoutes from "./routes/writeupRoutes";
 import userRoutes from "./routes/userRoutes";
@@ -12,6 +13,8 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
+
+app.use("/api", apiLimiter);
 
 app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "ok" });

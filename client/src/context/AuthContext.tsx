@@ -14,6 +14,7 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (user: User) => void;
 }
 
 const STORAGE_KEY = "pwnfolio:auth";
@@ -86,8 +87,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem(STORAGE_KEY);
   };
 
+  const updateUser = (next: User) => {
+    const stored = readStored();
+    setUser(next);
+    if (stored) {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ user: next, accessToken: stored.accessToken }),
+      );
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, initializing, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ user, initializing, login, register, logout, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

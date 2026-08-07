@@ -39,8 +39,11 @@ export const getAuthorId = (writeup: {
     ? writeup.author
     : (writeup.author as { _id?: string })?._id;
 
-export const readTime = (writeup: Pick<Writeup, "title" | "sections">): number => {
-  const words = [writeup.title, ...Object.values(writeup.sections)]
+export const readTime = (writeup: {
+  title: string;
+  sections?: Writeup["sections"];
+}): number => {
+  const words = [writeup.title, ...Object.values(writeup.sections ?? {})]
     .join(" ")
     .split(/\s+/)
     .filter(Boolean).length;

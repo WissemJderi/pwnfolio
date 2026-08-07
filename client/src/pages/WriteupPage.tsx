@@ -1,17 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
-  Bookmark,
-  ChevronRight,
-  Clock,
-  Heart,
-  MessageSquare,
-  Pencil,
-} from "lucide-react";
+  TbBookmark,
+  TbChevronRight,
+  TbClock,
+  TbEdit,
+  TbEye,
+  TbHeart,
+  TbMessageCircle,
+} from "react-icons/tb";
 import { api } from "../api/client";
 import type { Writeup } from "../api/types";
 import { useAuth } from "../context/AuthContext";
 import { Comments } from "../components/Comments";
+import { Markdown } from "../components/Markdown";
+import { ReadingProgress } from "../components/ReadingProgress";
 import { Skeleton, SectionSkeleton } from "../components/Skeleton";
 import {
   CATEGORY_BADGE,
@@ -157,6 +160,7 @@ export const WriteupPage = () => {
 
   return (
     <article>
+      <ReadingProgress />
       <p className="muted mb-4 truncate">
         <Link to="/" className="text-ink-400 hover:text-neon-400">
           ~/writeups
@@ -209,7 +213,11 @@ export const WriteupPage = () => {
         <span>{fmtDate(writeup.createdAt)}</span>
         <span className="text-ink-500/60">·</span>
         <span className="flex items-center gap-1">
-          <Clock size={12} /> ~{readTime(writeup)} min read
+          <TbClock size={13} /> ~{readTime(writeup)} min read
+        </span>
+        <span className="text-ink-500/60">·</span>
+        <span className="flex items-center gap-1">
+          <TbEye size={13} /> {writeup.views ?? 0} views
         </span>
       </p>
 
@@ -218,19 +226,19 @@ export const WriteupPage = () => {
           onClick={() => void toggleLike()}
           className={`btn ${writeup.isLikedByMe ? "btn-primary" : "btn-outline"} text-xs`}
         >
-          <Heart size={14} fill={writeup.isLikedByMe ? "currentColor" : "none"} />
+          <TbHeart size={15} fill={writeup.isLikedByMe ? "currentColor" : "none"} />
           {writeup.likesCount ?? 0}
         </button>
         <button
           onClick={() => void toggleSave()}
           className={`btn ${writeup.isSavedByMe ? "btn-primary" : "btn-outline"} text-xs`}
         >
-          <Bookmark size={14} fill={writeup.isSavedByMe ? "currentColor" : "none"} />
+          <TbBookmark size={15} fill={writeup.isSavedByMe ? "currentColor" : "none"} />
           {writeup.isSavedByMe ? "saved" : "save"}
         </button>
         {isMine && (
           <Link to={`/writeups/${writeup._id}/edit`} className="btn btn-outline text-xs">
-            <Pencil size={13} /> edit
+            <TbEdit size={14} /> edit
           </Link>
         )}
         {actionError && (
@@ -245,9 +253,7 @@ export const WriteupPage = () => {
               <h2 className="section-head">
                 <span className="text-ink-500">##</span> {title}
               </h2>
-              <div className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink-300">
-                {writeup.sections[key]}
-              </div>
+              <Markdown source={writeup.sections[key]} />
             </section>
           ))}
         </div>
@@ -263,7 +269,7 @@ export const WriteupPage = () => {
                       href={`#${label}`}
                       className="inline-flex items-center gap-1 text-ink-400 hover:text-neon-400"
                     >
-                      <ChevronRight size={13} className="text-neon-500" /> {title}
+                      <TbChevronRight size={14} className="text-neon-500" /> {title}
                     </a>
                   </li>
                 ))}
@@ -290,13 +296,13 @@ export const WriteupPage = () => {
                 <div className="flex justify-between">
                   <dt className="text-ink-500">likes</dt>
                   <dd className="flex items-center gap-1 text-neon-500">
-                    <Heart size={12} fill="currentColor" /> {writeup.likesCount ?? 0}
+                    <TbHeart size={13} fill="currentColor" /> {writeup.likesCount ?? 0}
                   </dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-ink-500">comments</dt>
                   <dd className="flex items-center gap-1 text-ink-300">
-                    <MessageSquare size={12} /> {writeup.commentCount ?? 0}
+                    <TbMessageCircle size={13} /> {writeup.commentCount ?? 0}
                   </dd>
                 </div>
               </dl>

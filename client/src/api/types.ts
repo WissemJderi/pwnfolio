@@ -1,23 +1,32 @@
-export type Category = "web" | "pwn" | "crypto" | "forensics" | "osint" | "misc";
-export type Difficulty = "easy" | "medium" | "hard" | "insane";
-export type WriteupStatus = "draft" | "published";
+import type { z } from "zod";
+import type {
+  createWriteupSchema,
+  updateProfileSchema,
+} from "@shared/schemas";
+
+export type Category = z.infer<typeof createWriteupSchema>["category"];
+export type Difficulty = NonNullable<
+  z.infer<typeof createWriteupSchema>["difficulty"]
+>;
+export type WriteupStatus = NonNullable<
+  z.infer<typeof createWriteupSchema>["status"]
+>;
+export type WriteupSections = z.infer<typeof createWriteupSchema>["sections"];
+
+export type ProfileLinks = NonNullable<
+  z.infer<typeof updateProfileSchema>["links"]
+>;
 
 export interface User {
   id: string;
   email: string;
   username: string;
+  links?: ProfileLinks;
 }
 
 export interface AuthorRef {
   _id: string;
   username: string;
-}
-
-export interface WriteupSections {
-  recon: string;
-  approach: string;
-  exploitChain: string;
-  takeaway: string;
 }
 
 export interface Writeup {
@@ -30,6 +39,7 @@ export interface Writeup {
   sections: WriteupSections;
   cveRefs: string[];
   status: WriteupStatus;
+  views?: number;
   author: AuthorRef | string;
   createdAt: string;
   updatedAt: string;
@@ -37,6 +47,10 @@ export interface Writeup {
   isLikedByMe?: boolean;
   isSavedByMe?: boolean;
   commentCount?: number;
+}
+
+export interface FeaturedResponse {
+  writeup: (Writeup & { likesCount: number }) | null;
 }
 
 export interface WriteupListResponse {
@@ -68,7 +82,28 @@ export interface PublicProfile {
     username: string;
     bio?: string;
     interests?: string[];
+    links?: ProfileLinks;
     createdAt: string;
   };
   writeups: Writeup[];
+}
+
+export interface StatsBucket {
+  name: string;
+  count: number;
+}
+
+export interface UserStats {
+  username: string;
+  totals: {
+    writeups: number;
+    likes: number;
+    comments: number;
+    saves: number;
+    views: number;
+  };
+  byCategory: StatsBucket[];
+  byDifficulty: StatsBucket[];
+  byPlatform: StatsBucket[];
+  activity: { month: string; count: number }[];
 }

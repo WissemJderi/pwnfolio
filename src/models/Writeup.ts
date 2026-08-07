@@ -14,6 +14,7 @@ export interface IWriteup extends Document {
   };
   cveRefs: string[];
   status: "draft" | "published";
+  views: number;
   author: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -42,6 +43,7 @@ const writeupSchema = new Schema<IWriteup>(
       enum: ["draft", "published"],
       default: "published",
     },
+    views: { type: Number, default: 0 },
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true },

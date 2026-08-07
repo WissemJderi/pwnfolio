@@ -1,8 +1,21 @@
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Search, TriangleAlert } from "lucide-react";
+import { Link } from "react-router-dom";
+import {
+  TbAlertTriangle,
+  TbChevronLeft,
+  TbChevronRight,
+  TbCrown,
+  TbHeart,
+  TbSearch,
+} from "react-icons/tb";
 import { api } from "../api/client";
-import type { Category, Difficulty, WriteupListResponse } from "../api/types";
-import { CATEGORY_LABELS } from "../lib/format";
+import type {
+  Category,
+  Difficulty,
+  FeaturedResponse,
+  WriteupListResponse,
+} from "../api/types";
+import { CATEGORY_BADGE, CATEGORY_LABELS } from "../lib/format";
 import { WriteupCard } from "../components/WriteupCard";
 import { Stagger, StaggerItem } from "../components/Stagger";
 import { GridSkeleton } from "../components/Skeleton";
@@ -18,13 +31,28 @@ export const HomePage = () => {
   const [difficulty, setDifficulty] = useState<string>("");
   const [search, setSearch] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
+  const [platform, setPlatform] = useState("");
+  const [appliedPlatform, setAppliedPlatform] = useState("");
+  const [tag, setTag] = useState("");
+  const [appliedTag, setAppliedTag] = useState("");
+  const [sort, setSort] = useState<"newest" | "oldest">("newest");
   const [page, setPage] = useState(1);
+  const [featured, setFeatured] = useState<FeaturedResponse["writeup"]>(null);
+
+  useEffect(() => {
+    api<FeaturedResponse>("/api/writeups/featured")
+      .then((res) => setFeatured(res.writeup))
+      .catch(() => setFeatured(null));
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams();
     if (category) params.set("category", category);
     if (difficulty) params.set("difficulty", difficulty);
     if (appliedSearch) params.set("search", appliedSearch);
+    if (appliedPlatform) params.set("platform", appliedPlatform);
+    if (appliedTag) params.set("tag", appliedTag);
+    if (sort === "oldest") params.set("sort", "oldest");
     params.set("page", String(page));
 
     setLoading(true);
@@ -35,12 +63,14 @@ export const HomePage = () => {
       })
       .catch(() => setWriteups([]))
       .finally(() => setLoading(false));
-  }, [page, category, difficulty, appliedSearch]);
+  }, [page, category, difficulty, appliedSearch, appliedPlatform, appliedTag, sort]);
 
   const applySearch = (e: React.FormEvent) => {
     e.preventDefault();
     setPage(1);
     setAppliedSearch(search.trim());
+    setAppliedPlatform(platform.trim().toLowerCase());
+    setAppliedTag(tag.trim().toLowerCase().replace(/^#/, ""));
   };
 
   const filterBtn = (
@@ -63,14 +93,15 @@ export const HomePage = () => {
 
   return (
     <div>
-      <div className="mb-6 flex items-baseline justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
         <h1 className="flex items-center gap-2 font-mono text-2xl font-bold">
-          <TriangleAlert size={20} className="text-blood-400" /> /writeups
+          <TbAlertTriangle size={22} className="text-blood-400" /> /writeups
           <span className="cursor" />
         </h1>
         <p className="muted hidden sm:block">
           {pagination ? `${pagination.total}` : "…"} result
-          {pagination && pagination.total !== 1 ? "s" : ""} · sorted by recency
+          {pagination && pagination.total !== 1 ? "s" : ""} · sorted{" "}
+          {sort === "oldest" ? "oldest-first" : "newest-first"}
         </p>
       </div>
 
@@ -79,16 +110,32 @@ export const HomePage = () => {
           <span className="font-mono text-sm font-bold text-neon-400">
             invariant❯
           </span>
-          <form onSubmit={applySearch} className="flex flex-1 gap-2">
-            <input
-              className="input"
-              placeholder="search index… (title / sections)"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <button type="submit" className="btn btn-primary shrink-0">
-              <Search size={14} /> run
-            </button>
+          <form onSubmit={applySearch} className="flex flex-1 flex-col gap-2">
+            <div className="flex gap-2">
+              <input
+                className="input"
+                placeholder="search index… (title / sections)"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <button type="submit" className="btn btn-primary shrink-0">
+                <TbSearch size={15} /> run
+              </button>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <input
+                className="input sm:max-w-60"
+                placeholder="platform (e.g. hackthebox, tryhackme)"
+                value={platform}
+                onChange={(e) => setPlatform(e.target.value)}
+              />
+              <input
+                className="input sm:max-w-44"
+                placeholder="#tag (e.g. sqli, lfi)"
+                value={tag}
+                onChange={(e) => setTag(e.target.value)}
+              />
+            </div>
           </form>
         </div>
 
@@ -97,11 +144,59 @@ export const HomePage = () => {
           {CATEGORIES.map((c) => filterBtn(c, CATEGORY_LABELS[c], category, setCategory))}
           <span className="muted ml-1">difficulty:</span>
           {DIFFICULTIES.map((d) => filterBtn(d, d, difficulty, setDifficulty))}
+          <div className="ml-auto flex items-center gap-2">
+            <span className="muted">sort:</span>
+            {(["newest", "oldest"] as const).map((s) => (
+              <button
+                key={s}
+                onClick={() => {
+                  setPage(1);
+                  setSort(s);
+                }}
+                className={`chip ${sort === s ? "chip-active" : ""}`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
         </div>
         <p className="mt-4 hidden font-mono text-[10px] text-ink-500/70 md:block">
           $ index --format=pwnfolio --tail --follow
         </p>
       </section>
+
+      {featured && (
+        <section className="panel mt-5 flex flex-col gap-3 border-neon-500/30 bg-gradient-to-r from-neon-500/[0.07] to-transparent p-4 sm:flex-row sm:items-center sm:gap-5">
+          <span className="inline-flex shrink-0 items-center gap-1.5 font-mono text-xs uppercase tracking-[0.2em] text-neon-400">
+            <TbCrown size={16} /> featured this week
+          </span>
+          <div className="min-w-0 flex-1">
+            <h2 className="truncate font-mono text-base font-semibold text-ink-100">
+              <Link
+                to={`/writeups/${featured._id}`}
+                className="hover:text-neon-400"
+              >
+                {featured.title}
+              </Link>
+            </h2>
+            <div className="mt-1 flex flex-wrap items-center gap-2 font-mono text-xs text-ink-500">
+              <span className={`badge ${CATEGORY_BADGE[featured.category]}`}>
+                {CATEGORY_LABELS[featured.category]}
+              </span>
+              {typeof featured.author !== "string" && (
+                <span>@ {featured.author.username}</span>
+              )}
+              <span className="text-ink-500/60">·</span>
+              <span className="flex items-center gap-1 text-neon-500">
+                <TbHeart size={13} fill="currentColor" /> {featured.likesCount}
+              </span>
+            </div>
+          </div>
+          <Link to={`/writeups/${featured._id}`} className="btn btn-outline shrink-0 text-xs">
+            read→
+          </Link>
+        </section>
+      )}
 
       {loading ? (
         <GridSkeleton />
@@ -126,7 +221,7 @@ export const HomePage = () => {
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
           >
-            <ChevronLeft size={15} /> prev
+            <TbChevronLeft size={16} /> prev
           </button>
           <span className="text-sm text-ink-500">
             {pagination.page} / {pagination.totalPages}
@@ -136,7 +231,7 @@ export const HomePage = () => {
             disabled={page >= pagination.totalPages}
             onClick={() => setPage(page + 1)}
           >
-            next <ChevronRight size={15} />
+            next <TbChevronRight size={16} />
           </button>
         </div>
       )}

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/User";
+import { AuthRequest } from "../middleware/authMiddleware";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -19,9 +20,6 @@ export const register = async (req: Request, res: Response) => {
   let createdUser;
   try {
     const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password required" });
-    }
 
     const existing = await User.findOne({ email });
     if (existing) {
@@ -98,6 +96,30 @@ export const refresh = async (req: Request, res: Response) => {
     res.json({ accessToken });
   } catch (err) {
     res.status(401).json({ message: "Invalid or expired refresh token" });
+  }
+};
+
+export const changePassword = async (req: AuthRequest, res: Response) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const match = await bcrypt.compare(currentPassword, user.password);
+    if (!match) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    res.status(204).send();
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Server error", error: (err as Error).message });
   }
 };
 

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterEach, afterAll } from "vitest";
 import request from "supertest";
 import app from "../../src/app";
+import Like from "../../src/models/Like";
 import { connectTestDB, closeTestDB, clearTestDB } from "../setup";
 import { registerUser } from "../helpers/authHelper";
 import { createWriteup, validWriteupBody } from "../helpers/writeupHelper";
@@ -122,6 +123,20 @@ describe("GET /api/writeups", () => {
       totalPages: 3,
     });
   });
+
+  it("filters case-insensitively by tag and platform", async () => {
+    const { accessToken } = await registerUser();
+    await createWriteup(accessToken, { tags: ["Sqli"], platform: "HackTheBox" });
+
+    const byTag = await request(app).get("/api/writeups?tag=sqli");
+    expect(byTag.status).toBe(200);
+    expect(byTag.body.writeups).toHaveLength(1);
+
+    const byPlatform = await request(app).get("/api/writeups?platform=hackthebox");
+    expect(byPlatform.status).toBe(200);
+    expect(byPlatform.body.writeups).toHaveLength(1);
+    expect(byPlatform.body.writeups[0].platform).toBe("HackTheBox");
+  });
 });
 
 describe("GET /api/writeups/:id", () => {
@@ -143,6 +158,93 @@ describe("GET /api/writeups/:id", () => {
     expect(res.body.likesCount).toBe(0);
     expect(res.body.isLikedByMe).toBe(false);
     expect(res.body.author.username).toBeTruthy();
+  });
+
+  it("skips the author's own reads and dedupes rapid duplicate loads", async () => {
+    const author = await registerUser({ email: "author@test.com" });
+    const r1 = await registerUser({ email: "reader1@test.com" });
+    const r2 = await registerUser({ email: "reader2@test.com" });
+    const created = await createWriteup(author.accessToken);
+    const url = `/api/writeups/${created.body._id}`;
+
+    const asAuthor = await request(app)
+      .get(url)
+      .set("Authorization", `Bearer ${author.accessToken}`);
+    expect(asAuthor.status).toBe(200);
+    expect(asAuthor.body.views).toBe(0);
+
+    const r1First = await request(app)
+      .get(url)
+      .set("Authorization", `Bearer ${r1.accessToken}`);
+    expect(r1First.body.views).toBe(1);
+
+    const r1Dup = await request(app)
+      .get(url)
+      .set("Authorization", `Bearer ${r1.accessToken}`);
+    expect(r1Dup.body.views).toBe(1);
+
+    const r2Read = await request(app)
+      .get(url)
+      .set("Authorization", `Bearer ${r2.accessToken}`);
+    expect(r2Read.body.views).toBe(2);
+  });
+});
+
+describe("GET /api/writeups/featured", () => {
+  it("returns writeup null when nothing has been liked", async () => {
+    const { accessToken } = await registerUser();
+    await createWriteup(accessToken);
+
+    const res = await request(app).get("/api/writeups/featured");
+
+    expect(res.status).toBe(200);
+    expect(res.body.writeup).toBeNull();
+  });
+
+  it("returns the most-liked published writeup", async () => {
+    const author = await registerUser({ email: "author@test.com" });
+    const a = await createWriteup(author.accessToken);
+    const b = await createWriteup(author.accessToken, { title: "Second one" });
+    const f1 = await registerUser({ email: "fan1@test.com" });
+    const f2 = await registerUser({ email: "fan2@test.com" });
+
+    await request(app)
+      .post(`/api/writeups/${a.body._id}/like`)
+      .set("Authorization", `Bearer ${f1.accessToken}`);
+    await request(app)
+      .post(`/api/writeups/${a.body._id}/like`)
+      .set("Authorization", `Bearer ${f2.accessToken}`);
+    await request(app)
+      .post(`/api/writeups/${b.body._id}/like`)
+      .set("Authorization", `Bearer ${f1.accessToken}`);
+
+    const res = await request(app).get("/api/writeups/featured");
+
+    expect(res.status).toBe(200);
+    expect(res.body.writeup._id).toBe(a.body._id);
+    expect(res.body.writeup.likesCount).toBe(2);
+    expect(res.body.writeup.author.username).toBeTruthy();
+  });
+
+  it("falls back to all-time top when there are no recent likes", async () => {
+    const author = await registerUser({ email: "author@test.com" });
+    const w = await createWriteup(author.accessToken);
+    const fan = await registerUser({ email: "fan@test.com" });
+
+    await request(app)
+      .post(`/api/writeups/${w.body._id}/like`)
+      .set("Authorization", `Bearer ${fan.accessToken}`);
+
+    await Like.updateMany(
+      {},
+      { $set: { createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000) } },
+    );
+
+    const res = await request(app).get("/api/writeups/featured");
+
+    expect(res.status).toBe(200);
+    expect(res.body.writeup._id).toBe(w.body._id);
+    expect(res.body.writeup.likesCount).toBe(1);
   });
 });
 
@@ -184,7 +286,7 @@ describe("PUT /api/writeups/:id", () => {
     expect(res.status).toBe(403);
   });
 
-  it("returns 403 when a different user tries to change the author", async () => {
+  it("rejects unknown fields with 400 before touching the writeup", async () => {
     const author = await registerUser({ email: "author@test.com" });
     const intruder = await registerUser({ email: "intruder@test.com" });
     const created = await createWriteup(author.accessToken);
@@ -194,7 +296,10 @@ describe("PUT /api/writeups/:id", () => {
       .set("Authorization", `Bearer ${intruder.accessToken}`)
       .send({ author: intruder.user.id });
 
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(400);
+
+    const after = await request(app).get(`/api/writeups/${created.body._id}`);
+    expect(after.body.author._id).toBe(author.user.id);
   });
 
   it("does not let the author reassign the writeup to another user", async () => {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { SquarePen, Trash2 } from "lucide-react";
+import { TbEdit, TbTrash } from "react-icons/tb";
 import { api } from "../api/client";
 import type {
   Category,
@@ -146,7 +146,7 @@ export const EditorPage = () => {
         <span className="cursor" />
       </p>
       <h1 className="flex items-center gap-2 font-mono text-2xl font-bold">
-        <SquarePen size={20} className="text-vio-400" />
+        <TbEdit size={22} className="text-vio-400" />
         {editing ? "edit-writeup" : "new-writeup"}
       </h1>
 
@@ -257,7 +257,7 @@ export const EditorPage = () => {
               className="btn btn-danger text-xs"
               onClick={() => void remove()}
             >
-              <Trash2 size={13} /> rm
+              <TbTrash size={14} /> rm
             </button>
           )}
           <button

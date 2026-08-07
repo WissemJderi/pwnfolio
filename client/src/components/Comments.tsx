@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { CornerDownRight, Trash2 } from "lucide-react";
+import { TbCornerDownRight, TbTrash } from "react-icons/tb";
 import { api } from "../api/client";
 import type { CommentWithReplies } from "../api/types";
 import { useAuth } from "../context/AuthContext";
 import { fmtDate } from "../lib/format";
+import { Markdown } from "./Markdown";
 import { Skeleton } from "./Skeleton";
 
 interface CommentsProps {
@@ -160,15 +161,13 @@ export const Comments = ({ writeupId, onCountChange }: CommentsProps) => {
                       className="flex items-center gap-1 text-blood-400 hover:underline"
                       onClick={() => void remove(comment._id)}
                     >
-                      <Trash2 size={12} /> delete
+                      <TbTrash size={13} /> delete
                     </button>
                   )}
                 </div>
               </div>
               <div className="px-4 py-3">
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink-200">
-                  {comment.content}
-                </p>
+                <Markdown source={comment.content} size="sm" />
                 {user && (
                   <button
                     className="mt-2 flex items-center gap-1 font-mono text-xs text-ink-500 hover:text-neon-400"
@@ -176,7 +175,7 @@ export const Comments = ({ writeupId, onCountChange }: CommentsProps) => {
                       setReplyingTo(replyingTo === comment._id ? null : comment._id)
                     }
                   >
-                    <CornerDownRight size={12} /> reply
+                    <TbCornerDownRight size={13} /> reply
                   </button>
                 )}
 
@@ -212,7 +211,7 @@ export const Comments = ({ writeupId, onCountChange }: CommentsProps) => {
                     {comment.replies.map((reply) => (
                       <li key={reply._id} className="border-b border-line-800/60 pb-3 last:border-0">
                         <div className="flex items-center gap-2 font-mono text-xs text-ink-500">
-                          <CornerDownRight size={12} className="text-neon-500" />
+                          <TbCornerDownRight size={13} className="text-neon-500" />
                           <span className="flex h-5 w-5 items-center justify-center rounded border border-line-700 bg-core-700/60 text-[10px] text-neon-400">
                             {reply.author.username.slice(0, 1).toUpperCase()}
                           </span>
@@ -227,14 +226,12 @@ export const Comments = ({ writeupId, onCountChange }: CommentsProps) => {
                                 className="flex items-center gap-1 text-blood-400 hover:underline"
                                 onClick={() => void remove(reply._id)}
                               >
-                                <Trash2 size={12} /> delete
+                                <TbTrash size={13} /> delete
                               </button>
                             )}
                           </div>
                         </div>
-                        <p className="mt-1 whitespace-pre-wrap pl-5 text-sm text-ink-200">
-                          {reply.content}
-                        </p>
+                        <Markdown source={reply.content} size="sm" className="pl-5" />
                       </li>
                     ))}
                   </ul>

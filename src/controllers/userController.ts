@@ -8,7 +8,7 @@ import { AuthRequest } from "../middleware/authMiddleware";
 export const getPublicProfile = async (req: AuthRequest, res: Response) => {
   try {
     const user = await User.findOne({ username: req.params.username }).select(
-      "username bio interests createdAt",
+      "username bio interests links createdAt",
     );
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -55,17 +55,27 @@ export const getPublicProfile = async (req: AuthRequest, res: Response) => {
 
 export const updateMyProfile = async (req: AuthRequest, res: Response) => {
   try {
-    const { username, bio, interests } = req.body;
+    const { username, bio, interests, links } = req.body;
 
     const updateData: Record<string, unknown> = {};
     if (username) updateData.username = username;
     if (bio !== undefined) updateData.bio = bio;
     if (interests) updateData.interests = interests;
 
+    if (links !== undefined && typeof links === "object") {
+      const clean: Record<string, string> = {};
+      for (const [key, value] of Object.entries(links)) {
+        if (typeof value === "string" && value.trim()) {
+          clean[key] = value.trim();
+        }
+      }
+      updateData.links = clean;
+    }
+
     const user = await User.findByIdAndUpdate(req.userId, updateData, {
       new: true,
       runValidators: true,
-    }).select("email username bio interests");
+    }).select("email username bio interests links");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

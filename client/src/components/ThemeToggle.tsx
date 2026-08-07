@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { Bug, Moon, Sun } from "lucide-react";
+import { TbBug, TbMoon, TbSun } from "react-icons/tb";
+import type { IconType } from "react-icons";
 
 type Theme = "dark" | "light" | "hacker";
 
-const THEMES: { id: Theme; icon: typeof Sun; label: string }[] = [
-  { id: "dark", icon: Moon, label: "dark" },
-  { id: "light", icon: Sun, label: "light" },
-  { id: "hacker", icon: Bug, label: "hacker" },
+const THEMES: { id: Theme; icon: IconType; label: string }[] = [
+  { id: "dark", icon: TbMoon, label: "dark" },
+  { id: "light", icon: TbSun, label: "light" },
+  { id: "hacker", icon: TbBug, label: "hacker" },
 ];
 
 const getInitial = (): Theme => {

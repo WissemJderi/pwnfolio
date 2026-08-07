@@ -6,7 +6,30 @@ import Comment from "../models/Comment";
 import { findVisibleWriteup } from "../utils/writeupAccess";
 import { AuthRequest } from "../middleware/authMiddleware";
 
-const VALID_STATUSES = ["draft", "published"] as const;
+const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");const iRegex = (v: unknown) => ({
+  $regex: escapeRegex(String(v)),
+  $options: "i",
+});
+
+const VIEW_DEDUPE_WINDOW_MS = 10_000;
+const recentViews = new Map<string, number>();
+
+const shouldCountView = (writeupId: string, viewer: string) => {
+  const key = `${writeupId}:${viewer}`;
+  const now = Date.now();
+  const last = recentViews.get(key);
+  if (last !== undefined && now - last < VIEW_DEDUPE_WINDOW_MS) {
+    return false;
+  }
+  recentViews.set(key, now);
+  if (recentViews.size > 10_000) {
+    const cutoff = now - VIEW_DEDUPE_WINDOW_MS;
+    for (const [k, t] of recentViews) {
+      if (t < cutoff) recentViews.delete(k);
+    }
+  }
+  return true;
+};
 
 export const createWriteup = async (req: AuthRequest, res: Response) => {
   try {
@@ -20,18 +43,6 @@ export const createWriteup = async (req: AuthRequest, res: Response) => {
       cveRefs,
       status,
     } = req.body;
-
-    if (!title || !category || !sections) {
-      return res
-        .status(400)
-        .json({ message: "title, category, and sections are required" });
-    }
-
-    if (status !== undefined && !VALID_STATUSES.includes(status)) {
-      return res
-        .status(400)
-        .json({ message: "status must be draft or published" });
-    }
 
     const writeup = await Writeup.create({
       title,
@@ -60,8 +71,8 @@ export const getWriteups = async (req: AuthRequest, res: Response) => {
 
     const filter: Record<string, unknown> = { status: "published" };
     if (category) filter.category = category;
-    if (tag) filter.tags = tag;
-    if (platform) filter.platform = platform;
+    if (tag) filter.tags = iRegex(tag);
+    if (platform) filter.platform = iRegex(platform);
     if (difficulty) filter.difficulty = difficulty;
     if (search) filter.$text = { $search: search as string };
 
@@ -121,6 +132,53 @@ export const getWriteups = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const getFeaturedWriteup = async (
+  _req: AuthRequest,
+  res: Response,
+) => {
+  try {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    const weekly = await Like.aggregate<{ _id: string; count: number }>([
+      { $match: { createdAt: { $gte: sevenDaysAgo } } },
+      { $group: { _id: "$writeup", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 1 },
+    ]);
+
+    let id = weekly[0]?._id as string | undefined;
+    if (!id) {
+      const allTime = await Like.aggregate<{ _id: string; count: number }>([
+        { $group: { _id: "$writeup", count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 1 },
+      ]);
+      id = allTime[0]?._id as string | undefined;
+    }
+
+    if (!id) {
+      return res.json({ writeup: null });
+    }
+
+    const writeup = await Writeup.findOne({
+      _id: id,
+      status: "published",
+    }).populate("author", "username");
+    if (!writeup) {
+      return res.json({ writeup: null });
+    }
+
+    const likesCount = await Like.countDocuments({ writeup: writeup._id });
+    res.json({
+      writeup: { ...writeup.toObject(), likesCount },
+    });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Server error", error: (err as Error).message });
+  }
+};
+
 export const getWriteupById = async (req: AuthRequest, res: Response) => {
   try {
     const writeup = await findVisibleWriteup(req.params.id as string, req.userId);
@@ -128,6 +186,19 @@ export const getWriteupById = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Writeup not found" });
     }
     await writeup.populate("author", "username");
+
+    let views = writeup.views ?? 0;
+    if (
+      writeup.status === "published" &&
+      writeup.author._id.toString() !== req.userId &&
+      shouldCountView(String(writeup._id), req.userId ?? `ip:${req.ip}`)
+    ) {
+      await Writeup.updateOne(
+        { _id: writeup._id },
+        { $inc: { views: 1 } },
+      );
+      views += 1;
+    }
 
     const likesCount = await Like.countDocuments({ writeup: writeup._id });
     const isLikedByMe = req.userId
@@ -142,6 +213,7 @@ export const getWriteupById = async (req: AuthRequest, res: Response) => {
 
     res.json({
       ...writeup.toObject(),
+      views,
       likesCount,
       isLikedByMe,
       isSavedByMe,
@@ -175,24 +247,6 @@ export const updateWriteup = async (req: AuthRequest, res: Response) => {
       "cveRefs",
       "status",
     ] as const;
-
-    const unknownFields = Object.keys(req.body).filter(
-      (key) => !(allowedFields as readonly string[]).includes(key),
-    );
-    if (unknownFields.length > 0) {
-      return res
-        .status(400)
-        .json({ message: `Invalid fields: ${unknownFields.join(", ")}` });
-    }
-
-    if (
-      req.body.status !== undefined &&
-      !VALID_STATUSES.includes(req.body.status)
-    ) {
-      return res
-        .status(400)
-        .json({ message: "status must be draft or published" });
-    }
 
     for (const field of allowedFields) {
       if (req.body[field] !== undefined) {

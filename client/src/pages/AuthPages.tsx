@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowRight, TriangleAlert } from "lucide-react";
+import { TbAlertTriangle, TbArrowUpRight } from "react-icons/tb";
 import { useAuth } from "../context/AuthContext";
 import { ApiError } from "../api/client";
 
@@ -77,7 +77,7 @@ const AuthCard = ({
         </div>
         {error && (
           <p className="flex items-center gap-1.5 font-mono text-xs text-blood-400">
-            <TriangleAlert size={13} /> {error}
+            <TbAlertTriangle size={14} /> {error}
           </p>
         )}
         <button
@@ -86,7 +86,7 @@ const AuthCard = ({
           disabled={busy}
         >
           {busy ? "authenticating…" : submitLabel}
-          <ArrowRight size={14} />
+          <TbArrowUpRight size={15} />
         </button>
       </form>
       <p className="mt-4 text-center font-mono text-xs text-ink-500">{footer}</p>

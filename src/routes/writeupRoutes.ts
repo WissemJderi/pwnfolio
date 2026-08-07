@@ -4,6 +4,7 @@ import {
   createWriteup,
   getWriteups,
   getWriteupById,
+  getFeaturedWriteup,
   updateWriteup,
   deleteWriteup,
 } from "../controllers/writeupController";
@@ -17,13 +18,19 @@ import {
   getComments,
   deleteComment,
 } from "../controllers/commentController";
+import { validate } from "../middleware/validate";
+import {
+  createWriteupSchema,
+  updateWriteupSchema,
+} from "../../shared/schemas";
 
 const router = Router();
 
 router.get("/", getWriteups);
+router.get("/featured", getFeaturedWriteup);
 router.get("/:id", optionalAuth, getWriteupById);
-router.post("/", requireAuth, createWriteup);
-router.put("/:id", requireAuth, updateWriteup);
+router.post("/", requireAuth, validate(createWriteupSchema), createWriteup);
+router.put("/:id", requireAuth, validate(updateWriteupSchema), updateWriteup);
 router.delete("/:id", requireAuth, deleteWriteup);
 router.post("/:id/like", requireAuth, likeWriteup);
 router.delete("/:id/like", requireAuth, unlikeWriteup);
