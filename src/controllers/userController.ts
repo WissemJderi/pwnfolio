@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { handleServerError } from "../utils/error";
 import User from "../models/User";
 import Writeup from "../models/Writeup";
 import Like from "../models/Like";
@@ -47,9 +48,7 @@ export const getPublicProfile = async (req: AuthRequest, res: Response) => {
       })),
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 
@@ -86,8 +85,6 @@ export const updateMyProfile = async (req: AuthRequest, res: Response) => {
     if ((err as { code?: number }).code === 11000) {
       return res.status(409).json({ message: "Username already taken" });
     }
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };

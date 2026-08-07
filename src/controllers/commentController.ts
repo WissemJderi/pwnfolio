@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { handleServerError } from "../utils/error";
 import Comment from "../models/Comment";
 import { findVisibleWriteup } from "../utils/writeupAccess";
 import { AuthRequest } from "../middleware/authMiddleware";
@@ -47,9 +48,7 @@ export const createComment = async (req: AuthRequest, res: Response) => {
 
     res.status(201).json(comment);
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 
@@ -87,9 +86,7 @@ export const getComments = async (req: AuthRequest, res: Response) => {
       })),
     );
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 
@@ -109,8 +106,6 @@ export const deleteComment = async (req: AuthRequest, res: Response) => {
     await comment.deleteOne();
     res.status(204).send();
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };

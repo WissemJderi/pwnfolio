@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { handleServerError } from "../utils/error";
 import SavedWriteup from "../models/SavedWriteup";
 import { findVisibleWriteup } from "../utils/writeupAccess";
 import { AuthRequest } from "../middleware/authMiddleware";
@@ -18,9 +19,7 @@ export const saveWriteup = async (req: AuthRequest, res: Response) => {
     if ((err as { code?: number }).code === 11000) {
       return res.status(409).json({ message: "Already saved" });
     }
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 
@@ -35,11 +34,10 @@ export const unsaveWriteup = async (req: AuthRequest, res: Response) => {
     if (!result) {
       return res.status(404).json({ message: "Saved writeup not found" });
     }
+
     res.status(204).send();
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 
@@ -56,8 +54,6 @@ export const getMySavedWriteups = async (req: AuthRequest, res: Response) => {
     const writeups = saved.map((s) => s.writeup);
     res.json(writeups);
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };

@@ -8,6 +8,7 @@ import {
   verifyRefreshToken,
 } from "../utils/jwt";
 import { generateUniqueUsername } from "../utils/generateUsername";
+import { handleServerError } from "../utils/error";
 
 const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
@@ -27,7 +28,6 @@ export const register = async (req: Request, res: Response) => {
     }
 
     const username = await generateUniqueUsername(email);
-
     const hashedPassword = await bcrypt.hash(password, 10);
     createdUser = await User.create({
       email,
@@ -50,15 +50,14 @@ export const register = async (req: Request, res: Response) => {
     if (createdUser) {
       await User.findByIdAndDelete(createdUser._id);
     }
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
@@ -78,9 +77,7 @@ export const login = async (req: Request, res: Response) => {
       user: { id: user._id, email: user.email, username: user.username },
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 
@@ -117,9 +114,7 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
     await user.save();
     res.status(204).send();
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 

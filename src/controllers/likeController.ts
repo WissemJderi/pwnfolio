@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { handleServerError } from "../utils/error";
 import Like from "../models/Like";
 import { findVisibleWriteup } from "../utils/writeupAccess";
 import { AuthRequest } from "../middleware/authMiddleware";
@@ -18,9 +19,7 @@ export const likeWriteup = async (req: AuthRequest, res: Response) => {
     if ((err as { code?: number }).code === 11000) {
       return res.status(409).json({ message: "Already liked" });
     }
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 
@@ -35,8 +34,6 @@ export const unlikeWriteup = async (req: AuthRequest, res: Response) => {
     }
     res.status(204).send();
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };

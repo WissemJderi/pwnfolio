@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { handleServerError } from "../utils/error";
 import Writeup from "../models/Writeup";
 import Like from "../models/Like";
 import SavedWriteup from "../models/SavedWriteup";
@@ -6,7 +7,8 @@ import Comment from "../models/Comment";
 import { findVisibleWriteup } from "../utils/writeupAccess";
 import { AuthRequest } from "../middleware/authMiddleware";
 
-const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");const iRegex = (v: unknown) => ({
+const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const iRegex = (v: unknown) => ({
   $regex: escapeRegex(String(v)),
   $options: "i",
 });
@@ -58,9 +60,7 @@ export const createWriteup = async (req: AuthRequest, res: Response) => {
 
     res.status(201).json(writeup);
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 
@@ -126,9 +126,7 @@ export const getWriteups = async (req: AuthRequest, res: Response) => {
       },
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 
@@ -173,9 +171,7 @@ export const getFeaturedWriteup = async (
       writeup: { ...writeup.toObject(), likesCount },
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 
@@ -220,11 +216,10 @@ export const getWriteupById = async (req: AuthRequest, res: Response) => {
       commentCount,
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
+
 export const updateWriteup = async (req: AuthRequest, res: Response) => {
   try {
     const writeup = await Writeup.findById(req.params.id);
@@ -258,9 +253,7 @@ export const updateWriteup = async (req: AuthRequest, res: Response) => {
 
     res.json(writeup);
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 
@@ -284,9 +277,7 @@ export const deleteWriteup = async (req: AuthRequest, res: Response) => {
     await writeup.deleteOne();
     res.status(204).send();
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
 
@@ -299,8 +290,6 @@ export const getMyWriteups = async (req: AuthRequest, res: Response) => {
     const writeups = await Writeup.find(filter).sort({ updatedAt: -1 });
     res.json(writeups);
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
