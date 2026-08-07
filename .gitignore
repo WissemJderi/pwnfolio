@@ -2,3 +2,7 @@ node_modules/
 dist/
 .env
 *.log
+cookies.txt
+writeup.json
+writeup3.json
+.DS_Store

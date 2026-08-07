@@ -143,46 +143,6 @@
     0 10px 28px -18px rgba(20, 22, 34, 0.35);
 }
 
-/* ---------- hacker (amber phosphor) ---------- */
-:root[data-theme="hacker"] {
-  color-scheme: dark;
-
-  --pf-core-950: #0b0905;
-  --pf-core-900: #151109;
-  --pf-core-850: #1e190e;
-  --pf-core-800: #292212;
-  --pf-core-700: #38301c;
-
-  --pf-line-800: #2e2816;
-  --pf-line-700: #4a4325;
-
-  --pf-ink-100: #fff2cf;
-  --pf-ink-200: #ffe8aa;
-  --pf-ink-300: #e8cd85;
-  --pf-ink-400: #b19d5f;
-  --pf-ink-500: #8a7a4a;
-
-  --pf-neon-300: #ffd75e;
-  --pf-neon-400: #ffc226;
-  --pf-neon-500: #ffad00;
-  --pf-neon-600: #cc8800;
-
-  --pf-vio-300: #ffc45a;
-  --pf-vio-400: #ffb224;
-  --pf-vio-500: #e29a00;
-
-  --pf-gold-300: #ffd98c;
-  --pf-gold-400: #f0be4a;
-
-  --pf-blood-300: #ff9f6b;
-  --pf-blood-400: #ff7a45;
-
-  --pf-glow: 255, 173, 0;
-  --pf-selection: rgba(255, 173, 0, 0.22);
-  --pf-selection-fg: #0b0905;
-  --pf-scrollbar: #4a4325;
-}
-
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 72px;
@@ -397,6 +357,9 @@ body {
     border-collapse: collapse;
     width: 100%;
     font-size: 0.9em;
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
   }
   .m-md th {
     @apply border border-line-700 bg-core-800/70 px-3 py-1.5 text-left font-mono text-xs;
@@ -429,11 +392,14 @@ body {
     @apply inline-flex items-center gap-1.5 text-ink-500 transition-colors hover:text-neon-400;
   }
   .m-pre code {
-    @apply block overflow-x-auto p-3 font-mono text-[13px] leading-relaxed;
+    @apply block p-3 font-mono text-[13px] leading-relaxed;
     color: var(--pf-ink-200);
     border: 0;
     background: transparent;
     padding: 0.75em 1em;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   /* syntax tokens (custom highlight.js palette) */

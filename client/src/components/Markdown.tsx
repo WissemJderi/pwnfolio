@@ -34,7 +34,7 @@ function CodeBlock({ children, className, ...props }: HTMLAttributes<HTMLPreElem
   };
 
   return (
-    <pre className={className} {...props}>
+    <pre className={`m-pre ${className ?? ""}`.trim()} {...props}>
       <div className="m-pre-bar">
         <span className="m-pre-lang">{lang ? `${lang}>` : "shell>"}</span>
         <button type="button" className="m-copy" onClick={copy} aria-label="copy code">

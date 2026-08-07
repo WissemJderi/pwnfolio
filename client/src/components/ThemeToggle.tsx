@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-import { TbBug, TbMoon, TbSun } from "react-icons/tb";
+import { TbMoon, TbSun } from "react-icons/tb";
 import type { IconType } from "react-icons";
 
-type Theme = "dark" | "light" | "hacker";
+type Theme = "dark" | "light";
 
 const THEMES: { id: Theme; icon: IconType; label: string }[] = [
   { id: "dark", icon: TbMoon, label: "dark" },
   { id: "light", icon: TbSun, label: "light" },
-  { id: "hacker", icon: TbBug, label: "hacker" },
 ];
 
 const getInitial = (): Theme => {
   const saved = localStorage.getItem("pf-theme");
-  if (saved === "dark" || saved === "light" || saved === "hacker") return saved;
+  if (saved === "dark" || saved === "light") return saved;
   return "dark";
 };
 
