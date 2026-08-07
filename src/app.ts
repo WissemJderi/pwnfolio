@@ -8,6 +8,7 @@ import { apiLimiter } from "./middleware/rateLimit";
 import authRoutes from "./routes/authRoutes";
 import writeupRoutes from "./routes/writeupRoutes";
 import userRoutes from "./routes/userRoutes";
+import { errorHandler } from "./middleware/errorMiddleware";
 
 const app: Application = express();
 app.use(
@@ -34,5 +35,7 @@ app.use("/api/users", userRoutes);
 app.get("/api/protected", requireAuth, (req: AuthRequest, res: Response) => {
   res.json({ message: "You are authenticated", userId: req.userId });
 });
+
+app.use(errorHandler);
 
 export default app;

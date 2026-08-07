@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { handleServerError } from "../utils/error";
 import User from "../models/User";
 import Writeup from "../models/Writeup";
 import Like from "../models/Like";
@@ -85,8 +86,6 @@ export const getUsernameStats = async (req: Request, res: Response) => {
       })),
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Server error", error: (err as Error).message });
+    return handleServerError(res, err);
   }
 };
