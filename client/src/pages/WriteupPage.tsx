@@ -85,7 +85,7 @@ export const WriteupPage = () => {
         </div>
 
         <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_230px]">
-          <div className="space-y-9">
+          <div className="min-w-0 space-y-9">
             {Array.from({ length: 4 }).map((_, i) => (
               <SectionSkeleton key={i} />
             ))}
@@ -247,7 +247,7 @@ export const WriteupPage = () => {
       </div>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_230px]">
-        <div className="space-y-9">
+        <div className="min-w-0 space-y-9">
           {SECTIONS.map(({ key, label, title }) => (
             <section key={key} id={label}>
               <h2 className="section-head">
