@@ -20,12 +20,19 @@ const request = async (path: string, options: RequestInit): Promise<Response> =>
   const headers = new Headers(options.headers);
   if (options.body) headers.set("Content-Type", "application/json");
   if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
-  return fetch(path, { ...options, headers });
+  return fetch(path, {
+    ...options,
+    headers,
+    credentials: options.credentials ?? "include",
+  });
 };
 
 const refreshAccessToken = (): Promise<string | null> => {
   if (!refreshPromise) {
-    refreshPromise = fetch("/api/auth/refresh", { method: "POST" })
+    refreshPromise = fetch("/api/auth/refresh", {
+      method: "POST",
+      credentials: "include",
+    })
       .then(async (res) => {
         if (!res.ok) return null;
         const data = (await res.json()) as { accessToken: string };

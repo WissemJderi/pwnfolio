@@ -21,10 +21,10 @@ const STORAGE_KEY = "pwnfolio:auth";
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const readStored = (): { user: User; accessToken: string } | null => {
+const readStored = (): { user: User } | null => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as { user: User; accessToken: string }) : null;
+    return raw ? (JSON.parse(raw) as { user: User }) : null;
   } catch {
     return null;
   }
@@ -40,9 +40,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setInitializing(false);
       return;
     }
+
     setUser(stored.user);
-    setAccessToken(stored.accessToken);
-    api("/api/users/me/writeups")
+
+    api<{ accessToken: string }>("/api/auth/refresh", {
+      method: "POST",
+    })
+      .then((res) => {
+        setAccessToken(res.accessToken);
+      })
       .catch(() => {
         setUser(null);
         setAccessToken(null);
@@ -54,10 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const saveSession = (res: AuthResponse) => {
     setAccessToken(res.accessToken);
     setUser(res.user);
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ user: res.user, accessToken: res.accessToken }),
-    );
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: res.user }));
   };
 
   const login = async (email: string, password: string) => {
@@ -91,10 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const stored = readStored();
     setUser(next);
     if (stored) {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ user: next, accessToken: stored.accessToken }),
-      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: next }));
     }
   };
 
