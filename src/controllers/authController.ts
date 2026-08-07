@@ -9,10 +9,11 @@ import {
 } from "../utils/jwt";
 import { generateUniqueUsername } from "../utils/generateUsername";
 import { handleServerError } from "../utils/error";
+import { NODE_ENV } from "../config/env";
 
 const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
+  secure: NODE_ENV === "production",
   sameSite: "strict" as const,
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };

@@ -9,15 +9,46 @@ import authRoutes from "./routes/authRoutes";
 import writeupRoutes from "./routes/writeupRoutes";
 import userRoutes from "./routes/userRoutes";
 import { errorHandler } from "./middleware/errorMiddleware";
+import { CLIENT_URL, NODE_ENV } from "./config/env";
 
 const app: Application = express();
+app.disable("x-powered-by");
+const clientUrl = CLIENT_URL || "http://localhost:5173";
+const allowedOrigin = clientUrl;
+const isProduction = NODE_ENV === "production";
+if (isProduction && !CLIENT_URL) {
+  throw new Error("CLIENT_URL is required in production");
+}
+if (isProduction) {
+  app.set("trust proxy", 1);
+}
 app.use(
   cors({
-    origin: process.env.CLIENT_URL ?? "http://localhost:5173",
+    origin: allowedOrigin,
     credentials: true,
   }),
 );
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'none'"],
+        baseUri: ["'self'"],
+        blockAllMixedContent: [],
+        fontSrc: ["'self'"],
+        frameAncestors: ["'none'"],
+        imgSrc: ["'self'", "data:"],
+        objectSrc: ["'none'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'"],
+        connectSrc: ["'self'"],
+        manifestSrc: ["'self'"],
+        workerSrc: ["'self'"],
+      },
+    },
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+  }),
+);
 app.use(express.json());
 app.use(cookieParser());
 

@@ -1,4 +1,6 @@
-const isProduction = process.env.NODE_ENV === "production";
+import { NODE_ENV } from "../config/env";
+
+const isProduction = NODE_ENV === "production";
 
 const formatMeta = (meta: unknown): string => {
   if (meta === undefined) return "";
