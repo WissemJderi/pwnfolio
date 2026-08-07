@@ -22,6 +22,32 @@ A full-stack CTF writeup sharing platform with a hacker/terminal aesthetic. Buil
 **Live:** https://pwnfolio.vercel.app
 **API:** https://pwnfolio.onrender.com
 
+## Screenshots
+
+![Home](docs/screenshots/home.png)
+
+The searchable home index — `$`-prompt search panel with category / difficulty / platform / tag filters, the weekly featured banner, and writeup cards showing badges, tags and stats at a glance.
+
+![Writeup](docs/screenshots/writeup.png)
+
+A published writeup — reading-progress bar, table of contents, syntax-highlighted snippets with a one-click copy bar, and the meta panel with author, views, likes and comments.
+
+![Stats](docs/screenshots/stats.png)
+
+The stats dashboard — 12-month activity, totals for writeups/likes/comments/saves/views, and category, difficulty and platform distributions.
+
+![Profile](docs/screenshots/profile.png)
+
+A public profile — markdown bio, interest chips, up to seven social links (GitHub, HTB, THM, LinkedIn, X, Discord, website), and the author's writeup list.
+
+![Light theme](docs/screenshots/light.png)
+
+The same home in light theme — themes persist per user and don't break a single layout.
+
+![Mobile](docs/screenshots/mobile.png)
+
+Mobile view — the desktop sidebar collapses into a slide-in drawer with Esc-to-close and scroll-lock.
+
 ---
 
 ## Stack
