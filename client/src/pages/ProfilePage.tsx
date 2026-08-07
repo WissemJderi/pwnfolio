@@ -56,9 +56,7 @@ const CATEGORY_BAR: Record<Category, string> = {
 };
 
 const toHref = (value: string): string =>
-  /^https?:\/\//i.test(value)
-    ? value
-    : `https://${value.replace(/^\/+/, "")}`;
+  /^https?:\/\//i.test(value) ? value : `https://${value.replace(/^\/+/, "")}`;
 
 const sanitize = (links: ProfileLinks | undefined): ProfileLinks => {
   const out: ProfileLinks = {};
@@ -69,7 +67,13 @@ const sanitize = (links: ProfileLinks | undefined): ProfileLinks => {
   return out;
 };
 
-const StatsStrip = ({ writeups, joined }: { writeups: Writeup[]; joined: string }) => {
+const StatsStrip = ({
+  writeups,
+  joined,
+}: {
+  writeups: Writeup[];
+  joined: string;
+}) => {
   const likes = writeups.reduce((sum, w) => sum + (w.likesCount ?? 0), 0);
   const comments = writeups.reduce((sum, w) => sum + (w.commentCount ?? 0), 0);
   const days = Math.max(
@@ -121,8 +125,13 @@ const CategoryBar = ({ writeups }: { writeups: Writeup[] }) => {
         {Array.from(counts.entries())
           .sort((a, b) => b[1] - a[1])
           .map(([category, count]) => (
-            <span key={category} className="muted inline-flex items-center gap-1.5">
-              <span className={`h-2 w-2 rounded-[2px] ${CATEGORY_BAR[category]}`} />
+            <span
+              key={category}
+              className="muted inline-flex items-center gap-1.5"
+            >
+              <span
+                className={`h-2 w-2 rounded-[2px] ${CATEGORY_BAR[category]}`}
+              />
               {CATEGORY_LABELS[category]} · {count}
             </span>
           ))}
@@ -143,7 +152,7 @@ const LinksRow = ({ links }: { links: ProfileLinks }) => {
         const isWebsite = key === "website";
         return (
           <a
-            key={key}
+            key={String(key)}
             href={toHref(value)}
             target="_blank"
             rel="noopener noreferrer"
@@ -280,7 +289,13 @@ export const ProfilePage = () => {
         method: "PUT",
         body: JSON.stringify({ username: uname, bio, interests, links }),
       });
-      if (user) updateUser({ id: user.id, email: next.email, username: next.username, links: next.links });
+      if (user)
+        updateUser({
+          id: user.id,
+          email: next.email,
+          username: next.username,
+          links: next.links,
+        });
       setEditing(false);
       if (next.username !== username) {
         navigate(`/users/${next.username}`, { replace: true });
@@ -307,7 +322,10 @@ export const ProfilePage = () => {
     try {
       await api("/api/auth/change-password", {
         method: "POST",
-        body: JSON.stringify({ currentPassword: pwCurrent, newPassword: pwNew }),
+        body: JSON.stringify({
+          currentPassword: pwCurrent,
+          newPassword: pwNew,
+        }),
       });
       setPwCurrent("");
       setPwNew("");
@@ -373,7 +391,10 @@ export const ProfilePage = () => {
           </div>
         )}
 
-        <StatsStrip writeups={profile.writeups} joined={profile.user.createdAt} />
+        <StatsStrip
+          writeups={profile.writeups}
+          joined={profile.user.createdAt}
+        />
         {profile.writeups.length > 0 && (
           <CategoryBar writeups={profile.writeups} />
         )}
@@ -381,7 +402,10 @@ export const ProfilePage = () => {
       </div>
 
       {isMine && editing && (
-        <form onSubmit={(e) => void saveProfile(e)} className="panel mt-6 space-y-5 p-6">
+        <form
+          onSubmit={(e) => void saveProfile(e)}
+          className="panel mt-6 space-y-5 p-6"
+        >
           <p className="section-head">
             <span className="text-neon-500">##</span> edit operator record
           </p>
@@ -425,7 +449,10 @@ export const ProfilePage = () => {
               {interests.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {interests.map((tag) => (
-                    <span key={tag} className="tag inline-flex items-center gap-1">
+                    <span
+                      key={tag}
+                      className="tag inline-flex items-center gap-1"
+                    >
                       #{tag}
                       <button
                         type="button"
@@ -459,14 +486,17 @@ export const ProfilePage = () => {
             <label className="label">links</label>
             <div className="grid gap-3 sm:grid-cols-2">
               {LINK_KEYS.map((key) => (
-                <div key={key}>
+                <div key={String(key)}>
                   <label className="label">{LINK_LABELS[key]}</label>
                   <input
                     className="input"
                     placeholder={`${LINK_LABELS[key]} handle or url`}
                     value={links[key] ?? ""}
                     onChange={(e) =>
-                      setLinks((prev) => ({ ...prev, [key]: e.target.value }))
+                      setLinks((prev: ProfileLinks) => ({
+                        ...prev,
+                        [key]: e.target.value,
+                      }))
                     }
                   />
                 </div>
@@ -479,7 +509,11 @@ export const ProfilePage = () => {
           )}
 
           <div className="flex items-center gap-2">
-            <button type="submit" className="btn btn-primary" disabled={saveBusy}>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={saveBusy}
+            >
               {saveBusy ? "saving…" : "save record"}
             </button>
             <button
@@ -494,7 +528,10 @@ export const ProfilePage = () => {
       )}
 
       {isMine && editing && (
-        <form onSubmit={(e) => void changePw(e)} className="panel mt-6 space-y-5 p-6">
+        <form
+          onSubmit={(e) => void changePw(e)}
+          className="panel mt-6 space-y-5 p-6"
+        >
           <p className="section-head">
             <span className="text-neon-500">##</span> change password
           </p>
@@ -587,3 +624,4 @@ export const ProfilePage = () => {
     </div>
   );
 };
+
