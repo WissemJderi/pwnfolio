@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320">
+  <rect width="1280" height="320" fill="#05070d"/>
+  <text x="80" y="165" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="84" font-weight="bold">
+    <tspan fill="#e6edf7">pwn</tspan><tspan fill="#b7ef1f">folio</tspan>
+  </text>
+  <text x="80" y="220" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="30" font-weight="bold" fill="#b7ef1f">&gt; writeups for hackers, by hackers</text>
+  <text x="1200" y="170" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="64" font-weight="bold" fill="#b7ef1f">>_</text>
+</svg>
