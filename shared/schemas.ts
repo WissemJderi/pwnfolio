@@ -86,3 +86,32 @@ export const updateProfileSchema = z.strictObject({
     })
     .optional(),
 });
+
+const OBJECT_ID = z.string().regex(/^[0-9a-fA-F]{24}$/, "invalid id");
+
+export const usernameParamsSchema = z.strictObject({
+  username: z
+    .string()
+    .trim()
+    .regex(/^[a-z0-9_-]{3,24}$/, "username must be 3–24 characters (a-z, 0-9, _ , -)"),
+});
+
+export const writeupQuerySchema = z.strictObject({
+  category: z.enum(CATEGORIES, "invalid category").optional(),
+  tag: z.string().trim().min(1, "tag is required").max(30, "tag is too long").optional(),
+  platform: z.string().trim().min(1, "platform is required").max(60, "platform is too long").optional(),
+  difficulty: z.enum(DIFFICULTIES, "invalid difficulty").optional(),
+  search: z.string().trim().min(1, "search is required").max(100, "search is too long").optional(),
+  sort: z.enum(["newest", "oldest"] as const, "invalid sort option").optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(10),
+});
+
+export const writeupIdParamsSchema = z.strictObject({
+  id: OBJECT_ID,
+});
+
+export const commentIdParamsSchema = z.strictObject({
+  id: OBJECT_ID,
+  commentId: OBJECT_ID,
+});

@@ -18,26 +18,34 @@ import {
   getComments,
   deleteComment,
 } from "../controllers/commentController";
-import { validate } from "../middleware/validate";
+import { validate, validateQuery, validateParams } from "../middleware/validate";
 import {
   createWriteupSchema,
   updateWriteupSchema,
+  writeupQuerySchema,
+  writeupIdParamsSchema,
+  commentIdParamsSchema,
 } from "../../shared/schemas";
 
 const router = Router();
 
-router.get("/", getWriteups);
+router.get("/", validateQuery(writeupQuerySchema), getWriteups);
 router.get("/featured", getFeaturedWriteup);
-router.get("/:id", optionalAuth, getWriteupById);
+router.get("/:id", optionalAuth, validateParams(writeupIdParamsSchema), getWriteupById);
 router.post("/", requireAuth, validate(createWriteupSchema), createWriteup);
-router.put("/:id", requireAuth, validate(updateWriteupSchema), updateWriteup);
-router.delete("/:id", requireAuth, deleteWriteup);
-router.post("/:id/like", requireAuth, likeWriteup);
-router.delete("/:id/like", requireAuth, unlikeWriteup);
-router.post("/:id/save", requireAuth, saveWriteup);
-router.delete("/:id/save", requireAuth, unsaveWriteup);
-router.get("/:id/comments", optionalAuth, getComments);
-router.post("/:id/comments", requireAuth, createComment);
-router.delete("/:id/comments/:commentId", requireAuth, deleteComment);
+router.put("/:id", requireAuth, validateParams(writeupIdParamsSchema), validate(updateWriteupSchema), updateWriteup);
+router.delete("/:id", requireAuth, validateParams(writeupIdParamsSchema), deleteWriteup);
+router.post("/:id/like", requireAuth, validateParams(writeupIdParamsSchema), likeWriteup);
+router.delete("/:id/like", requireAuth, validateParams(writeupIdParamsSchema), unlikeWriteup);
+router.post("/:id/save", requireAuth, validateParams(writeupIdParamsSchema), saveWriteup);
+router.delete("/:id/save", requireAuth, validateParams(writeupIdParamsSchema), unsaveWriteup);
+router.get("/:id/comments", optionalAuth, validateParams(writeupIdParamsSchema), getComments);
+router.post("/:id/comments", requireAuth, validateParams(writeupIdParamsSchema), createComment);
+router.delete(
+  "/:id/comments/:commentId",
+  requireAuth,
+  validateParams(commentIdParamsSchema),
+  deleteComment,
+);
 
 export default router;
