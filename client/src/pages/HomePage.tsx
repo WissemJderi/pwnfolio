@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   TbAlertTriangle,
+  TbBrandGithub,
   TbChevronLeft,
   TbChevronRight,
   TbCrown,
@@ -93,6 +94,21 @@ export const HomePage = () => {
 
   return (
     <div>
+      <p className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-ink-500">
+        <span className="select-none text-ink-600">//</span>
+        <span>writeups for hackers, by hackers</span>
+        <span className="select-none text-ink-600">·</span>
+        <a
+          href="https://github.com/WissemJderi"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1 text-ink-400 transition-colors hover:text-neon-400"
+        >
+          @WissemJderi
+          <TbBrandGithub size={13} />
+        </a>
+      </p>
+
       <div className="mb-6 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
         <h1 className="flex items-center gap-2 font-mono text-2xl font-bold">
           <TbAlertTriangle size={22} className="text-blood-400" /> /writeups
