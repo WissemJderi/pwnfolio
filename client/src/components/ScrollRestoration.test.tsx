@@ -1,10 +1,14 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, Link, useNavigate } from "react-router-dom";
 import { ScrollRestoration } from "./ScrollRestoration";
 
-const scrollTo = vi.fn();
 let scrollY = 0;
+let maxScroll = 0;
+
+const scrollTo = vi.fn((_x: number, y: number) => {
+  scrollY = Math.max(0, Math.min(y, maxScroll));
+});
 
 const BackButton = () => {
   const navigate = useNavigate();
@@ -22,27 +26,68 @@ const Harness = () => (
 );
 
 beforeEach(() => {
-  scrollTo.mockReset();
   scrollY = 0;
+  maxScroll = 0;
+  scrollTo.mockClear();
   sessionStorage.clear();
   Object.defineProperty(window, "scrollY", { configurable: true, get: () => scrollY });
-  globalThis.scrollTo = scrollTo;
+  Object.defineProperty(document.documentElement, "scrollHeight", {
+    configurable: true,
+    get: () => maxScroll + window.innerHeight,
+  });
+  globalThis.scrollTo = scrollTo as unknown as typeof globalThis.scrollTo;
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 describe("ScrollRestoration", () => {
   it("scrolls to top on push navigation", () => {
     render(<Harness />);
+    maxScroll = 5000;
     scrollY = 1500;
     fireEvent.click(screen.getByRole("link", { name: "to b" }));
-    expect(scrollTo).toHaveBeenCalledWith(0, 0);
+    expect(scrollY).toBe(0);
   });
 
-  it("saves the scroll position and restores it on pop", () => {
+  it("restores the exact position once the page reaches full height", () => {
     render(<Harness />);
-    scrollY = 1500;
+    maxScroll = 5000;
+    scrollY = 4200;
     fireEvent.click(screen.getByRole("link", { name: "to b" }));
-    scrollY = 900;
+    scrollY = 500;
+    maxScroll = 200;
     fireEvent.click(screen.getByRole("button", { name: "back" }));
-    expect(scrollTo).toHaveBeenLastCalledWith(0, 1500);
+    expect(scrollY).toBe(200);
+    vi.advanceTimersByTime(50);
+    maxScroll = 6000;
+    vi.advanceTimersByTime(100);
+    expect(scrollY).toBe(4200);
+  });
+
+  it("rests at the bottom when the page never reaches full height", () => {
+    render(<Harness />);
+    maxScroll = 5000;
+    scrollY = 4200;
+    fireEvent.click(screen.getByRole("link", { name: "to b" }));
+    maxScroll = 200;
+    fireEvent.click(screen.getByRole("button", { name: "back" }));
+    vi.advanceTimersByTime(1000);
+    expect(scrollY).toBe(200);
+  });
+
+  it("stops chasing when the user scrolls manually", () => {
+    render(<Harness />);
+    maxScroll = 5000;
+    scrollY = 4200;
+    fireEvent.click(screen.getByRole("link", { name: "to b" }));
+    maxScroll = 200;
+    fireEvent.click(screen.getByRole("button", { name: "back" }));
+    scrollY = 400;
+    vi.advanceTimersByTime(1000);
+    expect(scrollY).toBe(400);
+    expect(scrollTo).toHaveBeenCalledTimes(2);
   });
 });
