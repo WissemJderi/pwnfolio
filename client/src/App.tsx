@@ -3,6 +3,7 @@ import { useLocation, Route, Routes, Outlet } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { Sidebar } from "./components/Sidebar";
 import { PageTransition } from "./components/PageTransition";
+import { ScrollRestoration } from "./components/ScrollRestoration";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { HomePage } from "./pages/HomePage";
 
@@ -62,8 +63,10 @@ const Layout = () => (
 export default function App() {
   const location = useLocation();
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+    <>
+      <ScrollRestoration />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
         <Route element={<Layout />}>
           <Route
             path="/"
@@ -183,6 +186,7 @@ export default function App() {
           />
         </Route>
       </Routes>
-    </AnimatePresence>
+      </AnimatePresence>
+    </>
   );
 }
