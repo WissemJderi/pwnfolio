@@ -81,6 +81,7 @@ export const UserHoverCardProvider = ({ children }: { children: ReactNode }) => 
   const [card, setCard] = useState<CardState | null>(null);
   const [data, setData] = useState<UserCard | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
   const intentTimer = useRef<number | null>(null);
@@ -126,8 +127,11 @@ export const UserHoverCardProvider = ({ children }: { children: ReactNode }) => 
           setStatus("ready");
         }
       })
-      .catch(() => {
-        if (pendingUserRef.current === username) setStatus("error");
+      .catch((err) => {
+        if (pendingUserRef.current === username) {
+          setErrorMsg((err as Error).message);
+          setStatus("error");
+        }
       });
   }, []);
 
@@ -246,7 +250,7 @@ export const UserHoverCardProvider = ({ children }: { children: ReactNode }) => 
             )}
             {status === "error" && (
               <p className="py-2 text-xs text-blood-400">
-                $ whoami {card.username} → fetch failed
+                $ whoami {card.username} → {errorMsg ?? "fetch failed"}
               </p>
             )}
             {status === "ready" && data && (
