@@ -55,7 +55,7 @@ Mobile view — the desktop sidebar collapses into a slide-in drawer with Esc-to
 
 **Backend:** Express 5 · MongoDB (Mongoose 9) · TypeScript · Zod
 **Frontend:** React 19 · Vite 6 · Tailwind v4 · Framer Motion · Recharts
-**Testing:** Vitest + Supertest + mongodb-memory-server — 100 backend tests across 10 files, plus 19 frontend tests (Vitest + Testing Library, jsdom); strict TS throughout
+**Testing:** Vitest + Supertest + mongodb-memory-server — 102 backend tests across 10 files, plus 32 frontend tests (Vitest + Testing Library, jsdom); strict TS throughout
 **Deployment:** Render (API) · Vercel (client, proxied) · MongoDB Atlas
 
 ---
@@ -89,17 +89,19 @@ Keeping `shared/schemas.ts` outside both `src/` and `client/` means both sides i
 - **Auth** — JWT (httpOnly cookies) + bcrypt password hashing, login/register/change-password, rate-limited auth endpoints, helmet-hardened headers
 - **Writeups** — full CRUD with structured sections (recon / approach / exploit-chain / takeaway), tags, CVE references, platform, difficulty, draft/published status — all validated server-side by the shared Zod schemas
 - **Social** — likes, save-for-later, threaded comments, view counting, featured writeup flag
-- **Users** — public profiles (markdown bio, interests, 7 social links), usernames, a stats endpoint aggregating activity over 12 months by category/difficulty/platform
-- **Quality** — 100 backend tests (10 files) + 19 frontend tests (Vitest + Testing Library with jsdom), strict TypeScript
+- **Users** — public profiles (markdown bio, interests, 7 social links), usernames, a lightweight profile-preview endpoint for hover cards, a stats endpoint aggregating activity over 12 months by category/difficulty/platform
+- **Quality** — 102 backend tests (10 files) + 32 frontend tests (Vitest + Testing Library with jsdom), strict TypeScript
 
 ## Frontend features
 
 - **Home** — search + filters (category/difficulty/platform/tag), sort, pagination, featured banner
-- **Writeup page** — reading progress bar, GFM markdown with syntax highlighting and a code copy button, table of contents, sticky meta panel, like/save, comments
+- **Writeup page** — reading progress bar, GFM markdown with syntax highlighting and a code copy button, table of contents, collapsible sections (expand/collapse all), sticky meta panel, like/save, comments
+- **Hover cards** — hovering any username (author, comments, replies) pops a profile preview with bio, interests, stats and a link to the full profile — intent-debounced, cached per session, one lightweight request per user, keyboard-accessible via focus
 - **Editor** — vim-flavored UI (`:w` to save draft, `:wq` to publish), delete
 - **Stats** — Recharts area/bar/pie charts, stat cards, difficulty legend
 - **Profiles** — category distribution bar, stats strip, markdown bio, link chips, editable settings + password change
 - **Design** — terminal/neon aesthetic, selectable dark/light themes, terminal `$`-prompt microcopy throughout, Framer Motion transitions
+- **Navigation** — exact scroll position restored on back navigation, per-page scroll reset on forward navigation
 - **Responsive** — desktop sidebar collapses to a mobile slide-in drawer (hamburger, backdrop, Escape-to-close, scroll lock); sidebar narrows on smaller laptop breakpoints
 
 ---
