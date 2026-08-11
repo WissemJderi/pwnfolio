@@ -52,6 +52,45 @@ export const getPublicProfile = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const getUserCard = async (req: AuthRequest, res: Response) => {
+  try {
+    const user = await User.findOne({
+      username: req.params.username.toLowerCase(),
+    }).select("username bio interests links createdAt");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const writeups = await Writeup.find({
+      author: user._id,
+      status: "published",
+    }).select("views");
+
+    const writeupIds = writeups.map((w) => w._id);
+
+    const [likes, comments] = await Promise.all([
+      Like.countDocuments({ writeup: { $in: writeupIds } }),
+      Comment.countDocuments({ writeup: { $in: writeupIds } }),
+    ]);
+
+    res.json({
+      username: user.username,
+      bio: user.bio,
+      interests: user.interests,
+      links: user.links,
+      createdAt: user.createdAt,
+      stats: {
+        writeups: writeups.length,
+        likes,
+        comments,
+        views: writeups.reduce((sum, w) => sum + (w.views ?? 0), 0),
+      },
+    });
+  } catch (err) {
+    return handleServerError(res, err);
+  }
+};
+
 export const updateMyProfile = async (req: AuthRequest, res: Response) => {
   try {
     const { username, bio, interests, links } = req.body;

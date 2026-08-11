@@ -5,6 +5,7 @@ import { Sidebar } from "./components/Sidebar";
 import { PageTransition } from "./components/PageTransition";
 import { ScrollRestoration } from "./components/ScrollRestoration";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { UserHoverCardProvider } from "./components/UserHoverCard";
 import { HomePage } from "./pages/HomePage";
 
 const WriteupPage = lazy(() =>
@@ -63,7 +64,7 @@ const Layout = () => (
 export default function App() {
   const location = useLocation();
   return (
-    <>
+    <UserHoverCardProvider>
       <ScrollRestoration />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
@@ -187,6 +188,6 @@ export default function App() {
         </Route>
       </Routes>
       </AnimatePresence>
-    </>
+    </UserHoverCardProvider>
   );
 }

@@ -5,6 +5,7 @@ import { api } from "../api/client";
 import type { Writeup } from "../api/types";
 import { CATEGORY_BADGE, CATEGORY_LABELS, fmtDate } from "../lib/format";
 import { RowSkeleton } from "../components/Skeleton";
+import { UserHover } from "../components/UserHoverCard";
 
 export const SavedWriteupsPage = () => {
   const [writeups, setWriteups] = useState<Writeup[]>([]);
@@ -88,12 +89,14 @@ export const SavedWriteupsPage = () => {
                       {CATEGORY_LABELS[w.category]}
                     </span>
                     {author ? (
-                      <Link
-                        to={`/users/${author.username}`}
-                        className="hover:text-neon-300"
-                      >
-                        @{author.username}
-                      </Link>
+                      <UserHover username={author.username}>
+                        <Link
+                          to={`/users/${author.username}`}
+                          className="hover:text-neon-300"
+                        >
+                          @{author.username}
+                        </Link>
+                      </UserHover>
                     ) : (
                       "unknown author"
                     )}

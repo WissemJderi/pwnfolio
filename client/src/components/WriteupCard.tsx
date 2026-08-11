@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { TbClock, TbEye, TbHeart, TbMessageCircle } from "react-icons/tb";
 import type { Writeup } from "../api/types";
+import { UserHover } from "./UserHoverCard";
 import {
   CATEGORY_BADGE,
   CATEGORY_LABELS,
@@ -66,7 +67,7 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
       <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-line-800 pt-2.5 font-mono text-xs text-ink-500">
         <span className="flex min-w-0 items-center gap-1.5">
           {author ? (
-            <>
+            <UserHover username={author.username}>
               <span className="flex h-5 w-5 shrink-0 items-center justify-center border border-line-700 bg-core-700/60 text-[10px] text-neon-400">
                 {author.username.slice(0, 1).toUpperCase()}
               </span>
@@ -76,7 +77,7 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
               >
                 @{author.username}
               </Link>
-            </>
+            </UserHover>
           ) : (
             "unknown author"
           )}

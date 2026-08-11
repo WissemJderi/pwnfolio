@@ -17,6 +17,7 @@ import { Comments } from "../components/Comments";
 import { Markdown } from "../components/Markdown";
 import { ReadingProgress } from "../components/ReadingProgress";
 import { Skeleton, SectionSkeleton } from "../components/Skeleton";
+import { UserHover } from "../components/UserHoverCard";
 import {
   CATEGORY_BADGE,
   CATEGORY_LABELS,
@@ -210,19 +211,23 @@ export const WriteupPage = () => {
 
       <p className="mt-3 flex flex-wrap items-center gap-3 font-mono text-sm text-ink-500">
         <span className="flex items-center gap-1.5">
-          <span className="flex h-6 w-6 items-center justify-center border border-line-700 bg-core-700/60 text-[11px] text-neon-400">
-            {author?.username.slice(0, 1).toUpperCase() ?? "?"}
-          </span>
-          by{" "}
           {author ? (
-            <Link
-              to={`/users/${author.username}`}
-              className="text-ink-300 hover:text-neon-400"
-            >
-              @{author.username}
-            </Link>
+            <UserHover username={author.username}>
+              <span className="flex h-6 w-6 items-center justify-center border border-line-700 bg-core-700/60 text-[11px] text-neon-400">
+                {author.username.slice(0, 1).toUpperCase()}
+              </span>
+              by{" "}
+              <Link
+                to={`/users/${author.username}`}
+                className="text-ink-300 hover:text-neon-400"
+              >
+                @{author.username}
+              </Link>
+            </UserHover>
           ) : (
-            "unknown"
+            <span className="flex h-6 w-6 items-center justify-center border border-line-700 bg-core-700/60 text-[11px] text-neon-400">
+              ?
+            </span>
           )}
         </span>
         <span className="text-ink-500/60">·</span>

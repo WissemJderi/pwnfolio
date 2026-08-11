@@ -88,6 +88,20 @@ export interface PublicProfile {
   writeups: Writeup[];
 }
 
+export interface UserCard {
+  username: string;
+  bio?: string;
+  interests?: string[];
+  links?: ProfileLinks;
+  createdAt: string;
+  stats: {
+    writeups: number;
+    likes: number;
+    comments: number;
+    views: number;
+  };
+}
+
 export interface StatsBucket {
   name: string;
   count: number;

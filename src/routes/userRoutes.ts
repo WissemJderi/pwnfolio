@@ -2,6 +2,7 @@ import { Router } from "express";
 import { requireAuth } from "../middleware/authMiddleware";
 import {
   getPublicProfile,
+  getUserCard,
   updateMyProfile,
 } from "../controllers/userController";
 import { getMySavedWriteups } from "../controllers/savedWriteupController";
@@ -18,6 +19,7 @@ const router = Router();
 router.get("/me/saved", requireAuth, getMySavedWriteups);
 router.get("/me/writeups", requireAuth, getMyWriteups);
 router.get("/:username/stats", validateParams(usernameParamsSchema), getUsernameStats);
+router.get("/:username/card", validateParams(usernameParamsSchema), getUserCard);
 router.get("/:username", validateParams(usernameParamsSchema), getPublicProfile);
 router.put("/me", requireAuth, validate(updateProfileSchema), updateMyProfile);
 

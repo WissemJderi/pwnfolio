@@ -44,6 +44,47 @@ describe("GET /api/users/:username", () => {
   });
 });
 
+describe("GET /api/users/:username/card", () => {
+  it("returns a lightweight profile card with stats", async () => {
+    const { accessToken } = await registerUser({ email: "hacker@test.com" });
+    await request(app)
+      .put("/api/users/me")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({ bio: "CTF enjoyer", interests: ["web", "pwn"] });
+
+    const w = await createWriteup(accessToken);
+    const other = await registerUser({ email: "other@test.com" });
+    const writeupId = (w.body as { _id: string })._id;
+    await request(app)
+      .post(`/api/writeups/${writeupId}/like`)
+      .set("Authorization", `Bearer ${other.accessToken}`);
+    await request(app)
+      .post(`/api/writeups/${writeupId}/comments`)
+      .set("Authorization", `Bearer ${other.accessToken}`)
+      .send({ content: "nice writeup" });
+
+    const res = await request(app).get("/api/users/hacker/card");
+
+    expect(res.status).toBe(200);
+    expect(res.body.username).toBe("hacker");
+    expect(res.body.bio).toBe("CTF enjoyer");
+    expect(res.body.interests).toEqual(["web", "pwn"]);
+    expect(res.body).not.toHaveProperty("writeups");
+    expect(res.body.stats).toEqual({
+      writeups: 1,
+      likes: 1,
+      comments: 1,
+      views: 0,
+    });
+    expect(res.body).not.toHaveProperty("password");
+  });
+
+  it("returns 404 for an unknown username", async () => {
+    const res = await request(app).get("/api/users/ghost/card");
+    expect(res.status).toBe(404);
+  });
+});
+
 describe("PUT /api/users/me", () => {
   it("returns 401 without a token", async () => {
     const res = await request(app).put("/api/users/me").send({ bio: "hi" });
