@@ -19,7 +19,7 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
     <motion.article
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.995 }}
-      className="panel group flex flex-col gap-3 p-4 transition-[border-color,box-shadow] duration-150 hover:border-neon-500/40 hover:shadow-[0_0_24px_-8px_rgba(var(--pf-glow),0.22)]"
+      className="panel group flex h-full flex-col gap-3 p-4 transition-[border-color,box-shadow] duration-150 hover:border-neon-500/40 hover:shadow-[0_0_24px_-8px_rgba(var(--pf-glow),0.22)]"
     >
       <div className="flex flex-wrap items-center gap-1.5 text-xs">
         <span className={`badge ${CATEGORY_BADGE[writeup.category]}`}>
