@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { version } from "../../package.json";
 import {
   TbBookmark,
   TbBooks,
@@ -109,7 +110,7 @@ export const Sidebar = () => {
 
   const statusLine = (
     <p className="flex items-center justify-between font-mono text-[10px] text-ink-500">
-      <span>ne0n-core v1.0.0</span>
+      <span>pwnfolio v{version}</span>
       <span className="flex items-center gap-1.5">
         <span className="relative flex h-1.5 w-1.5">
           <span className="absolute inline-flex h-full w-full animate-ping bg-neon-500 opacity-60" />
