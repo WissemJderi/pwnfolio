@@ -12,6 +12,7 @@ import {
 import { api } from "../api/client";
 import type { Writeup } from "../api/types";
 import { useAuth } from "../context/AuthContext";
+import { CollapsibleSection } from "../components/CollapsibleSection";
 import { Comments } from "../components/Comments";
 import { Markdown } from "../components/Markdown";
 import { ReadingProgress } from "../components/ReadingProgress";
@@ -39,6 +40,7 @@ export const WriteupPage = () => {
   const [writeup, setWriteup] = useState<Writeup | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -52,6 +54,20 @@ export const WriteupPage = () => {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    setCollapsed({});
+  }, [id]);
+
+  const toggleSection = useCallback((key: string) => {
+    setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+
+  const expandAll = useCallback(() => setCollapsed({}), []);
+
+  const collapseAll = useCallback(() => {
+    setCollapsed(Object.fromEntries(SECTIONS.map((s) => [s.key, true])));
+  }, []);
 
   const setCommentCount = useCallback((count: number) => {
     setWriteup((w) => (w ? { ...w, commentCount: count } : w));
@@ -249,12 +265,15 @@ export const WriteupPage = () => {
       <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_230px]">
         <div className="min-w-0 space-y-9">
           {SECTIONS.map(({ key, label, title }) => (
-            <section key={key} id={label}>
-              <h2 className="section-head">
-                <span className="text-ink-500">##</span> {title}
-              </h2>
+            <CollapsibleSection
+              key={key}
+              id={label}
+              title={title}
+              collapsed={!!collapsed[key]}
+              onToggle={() => toggleSection(key)}
+            >
               <Markdown source={writeup.sections[key]} />
-            </section>
+            </CollapsibleSection>
           ))}
         </div>
 
@@ -267,6 +286,7 @@ export const WriteupPage = () => {
                   <li key={key}>
                     <a
                       href={`#${label}`}
+                      onClick={() => toggleSection(key)}
                       className="inline-flex items-center gap-1 text-ink-400 hover:text-neon-400"
                     >
                       <TbChevronRight size={14} className="text-neon-500" /> {title}
@@ -274,6 +294,22 @@ export const WriteupPage = () => {
                   </li>
                 ))}
               </ul>
+              <div className="mt-3 flex gap-1.5 border-t border-line-800 pt-3">
+                <button
+                  type="button"
+                  onClick={expandAll}
+                  className="chip flex-1 justify-center px-2 text-[11px]"
+                >
+                  expand all
+                </button>
+                <button
+                  type="button"
+                  onClick={collapseAll}
+                  className="chip flex-1 justify-center px-2 text-[11px]"
+                >
+                  collapse all
+                </button>
+              </div>
             </nav>
 
             <div className="panel p-4">
