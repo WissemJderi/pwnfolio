@@ -55,7 +55,7 @@ export const getPublicProfile = async (req: AuthRequest, res: Response) => {
 export const getUserCard = async (req: AuthRequest, res: Response) => {
   try {
     const user = await User.findOne({
-      username: req.params.username.toLowerCase(),
+      username: String(req.params.username).toLowerCase(),
     }).select("username bio interests links createdAt");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
