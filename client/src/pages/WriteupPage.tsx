@@ -194,7 +194,7 @@ export const WriteupPage = () => {
 
       <p className="mt-3 flex flex-wrap items-center gap-3 font-mono text-sm text-ink-500">
         <span className="flex items-center gap-1.5">
-          <span className="flex h-6 w-6 items-center justify-center rounded border border-line-700 bg-core-700/60 text-[11px] text-neon-400">
+          <span className="flex h-6 w-6 items-center justify-center border border-line-700 bg-core-700/60 text-[11px] text-neon-400">
             {author?.username.slice(0, 1).toUpperCase() ?? "?"}
           </span>
           by{" "}

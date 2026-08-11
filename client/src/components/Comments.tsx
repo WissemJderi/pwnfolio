@@ -146,7 +146,7 @@ export const Comments = ({ writeupId, onCountChange }: CommentsProps) => {
           {comments.map((comment) => (
             <li key={comment._id} className="table-list overflow-hidden">
               <div className="flex items-center gap-2 border-b border-line-800 bg-core-800/40 px-4 py-2 font-mono text-xs text-ink-500">
-                <span className="flex h-5 w-5 items-center justify-center rounded border border-line-700 bg-core-700/60 text-[10px] text-neon-400">
+                <span className="flex h-5 w-5 items-center justify-center border border-line-700 bg-core-700/60 text-[10px] text-neon-400">
                   {comment.author.username.slice(0, 1).toUpperCase()}
                 </span>
                 <span className="font-medium text-ink-300">
@@ -212,7 +212,7 @@ export const Comments = ({ writeupId, onCountChange }: CommentsProps) => {
                       <li key={reply._id} className="border-b border-line-800/60 pb-3 last:border-0">
                         <div className="flex items-center gap-2 font-mono text-xs text-ink-500">
                           <TbCornerDownRight size={13} className="text-neon-500" />
-                          <span className="flex h-5 w-5 items-center justify-center rounded border border-line-700 bg-core-700/60 text-[10px] text-neon-400">
+                          <span className="flex h-5 w-5 items-center justify-center border border-line-700 bg-core-700/60 text-[10px] text-neon-400">
                             {reply.author.username.slice(0, 1).toUpperCase()}
                           </span>
                           <span className="font-medium text-ink-300">

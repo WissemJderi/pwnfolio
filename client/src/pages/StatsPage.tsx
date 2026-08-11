@@ -73,7 +73,7 @@ const ChartTooltip = ({
   if (!active || !payload?.length) return null;
   const value = payload.reduce((s, p) => s + (p.value ?? 0), 0);
   return (
-    <div className="rounded-sm border border-line-700 bg-core-800/95 px-2.5 py-1.5 font-mono text-xs shadow-lg">
+    <div className=" border border-line-700 bg-core-800/95 px-2.5 py-1.5 font-mono text-xs shadow-lg">
       {label != null && <p className="mb-0.5 text-ink-500">{label}</p>}
       <p className="text-neon-400">
         {value.toLocaleString()} writeup{value === 1 ? "" : "s"}
@@ -95,7 +95,7 @@ const StatCard = ({
 }) => (
   <div className="panel flex items-center gap-3 p-4">
     <span
-      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border ${color}`}
+      className={`flex h-10 w-10 shrink-0 items-center justify-center  border ${color}`}
     >
       {icon}
     </span>
@@ -130,7 +130,7 @@ const DifficultyLegend = ({
           className="flex items-center gap-1.5 font-mono text-[11px] text-ink-300"
         >
           <span
-            className="inline-block h-2 w-2 rounded-[1px]"
+            className="inline-block h-2 w-2"
             style={{ background: DIFFICULTY_HEX[r.name as Difficulty] ?? "#7e8494" }}
           />
           {r.name}

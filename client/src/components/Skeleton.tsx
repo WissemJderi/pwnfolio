@@ -1,6 +1,6 @@
 export const Skeleton = ({ className = "" }: { className?: string }) => (
   <div
-    className={`animate-pulse rounded-sm border border-line-800 bg-core-700/50 ${className}`}
+    className={`animate-pulse border border-line-800 bg-core-700/50 ${className}`}
     aria-hidden="true"
   />
 );

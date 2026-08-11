@@ -14,7 +14,7 @@ import { useAuth } from "../context/AuthContext";
 import { ThemeToggle } from "./ThemeToggle";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
-  `group flex items-center gap-2 rounded-sm border px-3 py-2 font-mono text-sm transition-colors ${
+  `group flex items-center gap-2  border px-3 py-2 font-mono text-sm transition-colors ${
     isActive
       ? "border-neon-500/30 bg-neon-500/10 text-neon-400"
       : "border-transparent text-ink-400 hover:bg-core-800/60 hover:text-ink-100"
@@ -73,8 +73,8 @@ export const Sidebar = () => {
   );
 
   const accountBlock = user ? (
-    <div className="flex items-center gap-3 rounded-sm border border-line-700 bg-core-800/50 p-3">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-neon-500/40 bg-neon-500/10 font-mono font-semibold text-neon-400">
+    <div className="flex items-center gap-3  border border-line-700 bg-core-800/50 p-3">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center  border border-neon-500/40 bg-neon-500/10 font-mono font-semibold text-neon-400">
         {user.username.slice(0, 1).toUpperCase()}
       </span>
       <div className="min-w-0 flex-1">
@@ -112,8 +112,8 @@ export const Sidebar = () => {
       <span>ne0n-core v1.0.0</span>
       <span className="flex items-center gap-1.5">
         <span className="relative flex h-1.5 w-1.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-neon-500 opacity-60" />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-neon-500 shadow-[0_0_6px_rgba(var(--pf-glow),0.6)]" />
+          <span className="absolute inline-flex h-full w-full animate-ping bg-neon-500 opacity-60" />
+          <span className="relative inline-flex h-1.5 w-1.5 bg-neon-500 shadow-[0_0_6px_rgba(var(--pf-glow),0.6)]" />
         </span>
         online
       </span>
@@ -165,7 +165,7 @@ export const Sidebar = () => {
             aria-label="toggle navigation"
             aria-expanded={open}
             onClick={() => setOpen((prev) => !prev)}
-            className="flex h-9 w-9 items-center justify-center rounded-sm border border-line-700 bg-core-800/60 text-ink-300 transition-colors hover:border-neon-500/40 hover:text-neon-400"
+            className="flex h-9 w-9 items-center justify-center  border border-line-700 bg-core-800/60 text-ink-300 transition-colors hover:border-neon-500/40 hover:text-neon-400"
           >
             {open ? <TbX size={18} /> : <TbMenu2 size={18} />}
           </button>
@@ -202,7 +202,7 @@ export const Sidebar = () => {
                   title="close menu"
                   aria-label="close navigation"
                   onClick={() => setOpen(false)}
-                  className="flex h-8 w-8 items-center justify-center rounded-sm border border-line-700 bg-core-800/60 text-ink-300 transition-colors hover:border-neon-500/40 hover:text-neon-400"
+                  className="flex h-8 w-8 items-center justify-center  border border-line-700 bg-core-800/60 text-ink-300 transition-colors hover:border-neon-500/40 hover:text-neon-400"
                 >
                   <TbX size={16} />
                 </button>

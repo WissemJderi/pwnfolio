@@ -89,7 +89,7 @@ const StatsStrip = ({
   ];
 
   return (
-    <div className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-line-800 bg-line-800 sm:grid-cols-4">
+    <div className="mt-5 grid grid-cols-2 gap-px overflow-hidden  border border-line-800 bg-line-800 sm:grid-cols-4">
       {stats.map(({ label, value }) => (
         <div key={label} className="bg-core-900/70 p-3 text-center">
           <p className="font-mono text-lg font-bold text-ink-100">{value}</p>
@@ -111,7 +111,7 @@ const CategoryBar = ({ writeups }: { writeups: Writeup[] }) => {
 
   return (
     <div className="mt-4">
-      <div className="flex h-1.5 w-full overflow-hidden rounded-sm bg-core-800">
+      <div className="flex h-1.5 w-full overflow-hidden  bg-core-800">
         {Array.from(counts.entries()).map(([category, count]) => (
           <div
             key={category}
@@ -130,7 +130,7 @@ const CategoryBar = ({ writeups }: { writeups: Writeup[] }) => {
               className="muted inline-flex items-center gap-1.5"
             >
               <span
-                className={`h-2 w-2 rounded-[2px] ${CATEGORY_BAR[category]}`}
+                className={`h-2 w-2 ${CATEGORY_BAR[category]}`}
               />
               {CATEGORY_LABELS[category]} · {count}
             </span>
@@ -156,7 +156,7 @@ const LinksRow = ({ links }: { links: ProfileLinks }) => {
             href={toHref(value)}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-sm border border-line-700 bg-core-800/50 px-2.5 py-1 font-mono text-xs text-ink-400 transition-colors hover:border-neon-500/40 hover:text-neon-300"
+            className="inline-flex items-center gap-1.5  border border-line-700 bg-core-800/50 px-2.5 py-1 font-mono text-xs text-ink-400 transition-colors hover:border-neon-500/40 hover:text-neon-300"
           >
             {isGithub ? (
               <SiGithub size={13} />
@@ -342,7 +342,7 @@ export const ProfilePage = () => {
     <div>
       <div className="panel grid-bg p-6">
         <div className="flex items-center gap-4">
-          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-sm border border-neon-500/40 bg-neon-500/10 font-mono text-3xl font-bold text-neon-400 shadow-[0_0_20px_-6px_rgba(var(--pf-glow),0.35)]">
+          <span className="flex h-16 w-16 shrink-0 items-center justify-center  border border-neon-500/40 bg-neon-500/10 font-mono text-3xl font-bold text-neon-400 shadow-[0_0_20px_-6px_rgba(var(--pf-glow),0.35)]">
             {profile.user.username.slice(0, 1).toUpperCase()}
           </span>
           <div className="min-w-0 flex-1">
@@ -376,7 +376,7 @@ export const ProfilePage = () => {
         </div>
 
         {profile.user.bio && (
-          <div className="mt-4 rounded-sm border border-line-800 bg-core-900/70 p-3">
+          <div className="mt-4  border border-line-800 bg-core-900/70 p-3">
             <Markdown source={profile.user.bio} />
           </div>
         )}

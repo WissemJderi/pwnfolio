@@ -67,7 +67,7 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
         <span className="flex min-w-0 items-center gap-1.5">
           {author ? (
             <>
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded border border-line-700 bg-core-700/60 text-[10px] text-neon-400">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center border border-line-700 bg-core-700/60 text-[10px] text-neon-400">
                 {author.username.slice(0, 1).toUpperCase()}
               </span>
               <Link
