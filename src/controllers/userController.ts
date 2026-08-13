@@ -17,6 +17,7 @@ export const getPublicProfile = async (req: AuthRequest, res: Response) => {
 
     const writeups = await Writeup.find({ author: user._id, status: "published" })
       .select("-sections") // exclude full body content from list view
+      .populate("author", "username")
       .sort({ createdAt: -1 });
 
     const writeupIds = writeups.map((w) => w._id);
