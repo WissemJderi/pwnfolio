@@ -224,7 +224,16 @@ export const HomePage = () => {
         <Stagger className="mt-6 grid gap-4 sm:grid-cols-2">
           {writeups.map((w) => (
             <StaggerItem key={w._id}>
-              <WriteupCard writeup={w} />
+              <WriteupCard
+                writeup={w}
+                onLikedChange={(id, next) =>
+                  setWriteups((list) =>
+                    list.map((item) =>
+                      item._id === id ? { ...item, ...next } : item,
+                    ),
+                  )
+                }
+              />
             </StaggerItem>
           ))}
         </Stagger>

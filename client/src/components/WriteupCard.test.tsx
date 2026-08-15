@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { WriteupCard } from "./WriteupCard";
+import { AuthProvider } from "../context/AuthContext";
 import type { Writeup } from "../api/types";
 
 const base: Writeup = {
@@ -13,6 +14,7 @@ const base: Writeup = {
   tags: ["sqli", "lfi"],
   sections: { recon: "some content", approach: "more depth", exploitChain: "x", takeaway: "y" },
   cveRefs: ["CVE-2021-0000"],
+  chainSteps: [],
   status: "published",
   views: 12,
   author: { _id: "u1", username: "wissem" },
@@ -25,7 +27,9 @@ const base: Writeup = {
 const renderCard = (writeup: Writeup = base) =>
   render(
     <MemoryRouter>
-      <WriteupCard writeup={writeup} />
+      <AuthProvider>
+        <WriteupCard writeup={writeup} />
+      </AuthProvider>
     </MemoryRouter>,
   );
 

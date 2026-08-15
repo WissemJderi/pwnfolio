@@ -606,7 +606,21 @@ export const ProfilePage = () => {
         <Stagger className="grid gap-4 sm:grid-cols-2">
           {profile.writeups.map((w) => (
             <StaggerItem key={w._id}>
-              <WriteupCard writeup={w} />
+              <WriteupCard
+                writeup={w}
+                onLikedChange={(id, next) =>
+                  setProfile((p) =>
+                    p
+                      ? {
+                          ...p,
+                          writeups: p.writeups.map((item) =>
+                            item._id === id ? { ...item, ...next } : item,
+                          ),
+                        }
+                      : p,
+                  )
+                }
+              />
             </StaggerItem>
           ))}
         </Stagger>

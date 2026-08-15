@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { TbClock, TbEye, TbHeart, TbMessageCircle } from "react-icons/tb";
+import { TbClock, TbEye, TbMessageCircle } from "react-icons/tb";
 import type { Writeup } from "../api/types";
 import { UserHover } from "./UserHoverCard";
+import { LikeButton, type LikeState } from "./LikeButton";
 import {
   CATEGORY_BADGE,
   CATEGORY_LABELS,
@@ -11,7 +12,13 @@ import {
   readTime,
 } from "../lib/format";
 
-export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
+export const WriteupCard = ({
+  writeup,
+  onLikedChange,
+}: {
+  writeup: Writeup;
+  onLikedChange?: (id: string, next: LikeState) => void;
+}) => {
   const author =
     typeof writeup.author === "string" ? null : writeup.author;
 
@@ -92,7 +99,12 @@ export const WriteupCard = ({ writeup }: { writeup: Writeup }) => {
             <TbClock size={14} /> ~{readTime(writeup)} min
           </span>
           <span className="flex items-center gap-1 text-neon-500">
-            <TbHeart size={14} fill="currentColor" /> {writeup.likesCount ?? 0}
+            <LikeButton
+              writeupId={writeup._id}
+              likesCount={writeup.likesCount ?? 0}
+              isLikedByMe={writeup.isLikedByMe ?? false}
+              onChanged={(next) => onLikedChange?.(writeup._id, next)}
+            />
           </span>
           <span className="flex items-center gap-1 text-ink-400">
             <TbMessageCircle size={14} /> {writeup.commentCount ?? 0}

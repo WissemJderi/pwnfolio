@@ -40,11 +40,23 @@ export const getPublicProfile = async (req: AuthRequest, res: Response) => {
       commentGroups.map((g) => [String(g._id), g.count]),
     );
 
+    const likedIds = req.userId
+      ? new Set(
+          (
+            await Like.find({
+              user: req.userId,
+              writeup: { $in: writeupIds },
+            }).select("writeup")
+          ).map((l) => String(l.writeup)),
+        )
+      : new Set<string>();
+
     res.json({
       user,
       writeups: writeups.map((w) => ({
         ...w.toObject(),
         likesCount: likeCounts.get(String(w._id)) ?? 0,
+        isLikedByMe: likedIds.has(String(w._id)),
         commentCount: commentCounts.get(String(w._id)) ?? 0,
       })),
     });

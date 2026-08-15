@@ -5,6 +5,10 @@ const TICK_MS = 50;
 const MAX_TICKS = 40;
 const STABLE_TICKS = 8;
 
+const positions = new Map<string, number>();
+
+export const resetScrollPositions = () => positions.clear();
+
 const maxScroll = () =>
   document.documentElement.scrollHeight - window.innerHeight;
 
@@ -62,19 +66,16 @@ export const ScrollRestoration = () => {
   const navigationType = useNavigationType();
 
   useEffect(() => {
-    if (navigationType === "POP") {
-      const saved = sessionStorage.getItem(location.key);
-      if (saved !== null && Number.isFinite(Number(saved))) {
-        return restorePosition(Number(saved));
-      }
-    } else {
-      window.scrollTo(0, 0);
+    const saved = positions.get(location.pathname);
+    if (saved !== undefined && Number.isFinite(saved)) {
+      return restorePosition(saved);
     }
+    window.scrollTo(0, 0);
   }, [location, navigationType]);
 
   useEffect(() => {
     return () => {
-      sessionStorage.setItem(location.key, String(window.scrollY));
+      positions.set(location.pathname, window.scrollY);
     };
   }, [location]);
 

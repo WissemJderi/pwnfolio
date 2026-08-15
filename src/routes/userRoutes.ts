@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAuth } from "../middleware/authMiddleware";
+import { requireAuth, optionalAuth } from "../middleware/authMiddleware";
 import {
   getPublicProfile,
   getUserCard,
@@ -20,7 +20,7 @@ router.get("/me/saved", requireAuth, getMySavedWriteups);
 router.get("/me/writeups", requireAuth, getMyWriteups);
 router.get("/:username/stats", validateParams(usernameParamsSchema), getUsernameStats);
 router.get("/:username/card", validateParams(usernameParamsSchema), getUserCard);
-router.get("/:username", validateParams(usernameParamsSchema), getPublicProfile);
+router.get("/:username", optionalAuth, validateParams(usernameParamsSchema), getPublicProfile);
 router.put("/me", requireAuth, validate(updateProfileSchema), updateMyProfile);
 
 export default router;
