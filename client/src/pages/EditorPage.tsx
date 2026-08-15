@@ -4,6 +4,7 @@ import { TbEdit, TbTrash } from "react-icons/tb";
 import { api } from "../api/client";
 import type {
   Category,
+  ChainStep,
   Difficulty,
   Writeup,
   WriteupStatus,
@@ -11,6 +12,7 @@ import type {
 import { useAuth } from "../context/AuthContext";
 import { getAuthorId } from "../lib/format";
 import { FormSkeleton } from "../components/Skeleton";
+import { ChainStepsEditor } from "../components/ExploitChain/ChainStepsEditor";
 
 const CATEGORIES: Category[] = ["web", "pwn", "crypto", "forensics", "osint", "misc"];
 const DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard", "insane"];
@@ -25,6 +27,7 @@ interface FormState {
   tags: string;
   cveRefs: string;
   sections: Record<SectionKey, string>;
+  chainSteps: ChainStep[];
 }
 
 const emptyForm = (): FormState => ({
@@ -35,6 +38,7 @@ const emptyForm = (): FormState => ({
   tags: "",
   cveRefs: "",
   sections: { recon: "", approach: "", exploitChain: "", takeaway: "" },
+  chainSteps: [],
 });
 
 const toCsv = (values: string[]): string => values.join(", ");
@@ -72,6 +76,7 @@ export const EditorPage = () => {
           tags: toCsv(w.tags),
           cveRefs: toCsv(w.cveRefs),
           sections: { ...w.sections },
+          chainSteps: w.chainSteps ?? [],
         });
       })
       .catch((err) => setError((err as Error).message))
@@ -95,6 +100,7 @@ export const EditorPage = () => {
       tags: fromCsv(form.tags),
       cveRefs: fromCsv(form.cveRefs),
       sections: form.sections,
+      chainSteps: form.chainSteps,
       status,
     };
     try {
@@ -247,6 +253,20 @@ export const EditorPage = () => {
             />
           </div>
         ))}
+
+        <div>
+          <label className="label">
+            <span className="text-neon-500">## </span>
+            exploit-chain-steps{" "}
+            <span className="normal-case tracking-normal text-ink-500">
+              / optional, powers the visualizer
+            </span>
+          </label>
+          <ChainStepsEditor
+            steps={form.chainSteps}
+            onChange={(chainSteps) => set("chainSteps", chainSteps)}
+          />
+        </div>
 
         {error && <p className="font-mono text-sm text-blood-400">{error}</p>}
 

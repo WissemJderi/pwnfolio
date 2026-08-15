@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { Types } from "mongoose";
 import { handleServerError } from "../utils/error";
 import Writeup from "../models/Writeup";
 import Like from "../models/Like";
@@ -12,6 +13,49 @@ const iRegex = (v: unknown) => ({
   $regex: escapeRegex(String(v)),
   $options: "i",
 });
+
+type WriteupLike = {
+  _id: Types.ObjectId;
+  toObject?: () => Record<string, unknown>;
+};
+
+const enrichCounts = async (writeups: WriteupLike[], userId?: string) => {
+  const writeupIds = writeups.map((w) => w._id);
+
+  const [likeGroups, commentGroups] = await Promise.all([
+    Like.aggregate([
+      { $match: { writeup: { $in: writeupIds } } },
+      { $group: { _id: "$writeup", count: { $sum: 1 } } },
+    ]),
+    Comment.aggregate([
+      { $match: { writeup: { $in: writeupIds } } },
+      { $group: { _id: "$writeup", count: { $sum: 1 } } },
+    ]),
+  ]);
+
+  const likeCounts = new Map(likeGroups.map((g) => [String(g._id), g.count]));
+  const commentCounts = new Map(
+    commentGroups.map((g) => [String(g._id), g.count]),
+  );
+
+  const likedIds = userId
+    ? new Set(
+        (
+          await Like.find({
+            user: userId,
+            writeup: { $in: writeupIds },
+          }).select("writeup")
+        ).map((l) => String(l.writeup)),
+      )
+    : new Set<string>();
+
+  return writeups.map((w) => ({
+    ...(typeof w.toObject === "function" ? w.toObject() : w),
+    likesCount: likeCounts.get(String(w._id)) ?? 0,
+    isLikedByMe: likedIds.has(String(w._id)),
+    commentCount: commentCounts.get(String(w._id)) ?? 0,
+  }));
+};
 
 const VIEW_DEDUPE_WINDOW_MS = 10_000;
 const recentViews = new Map<string, number>();
@@ -43,6 +87,7 @@ export const createWriteup = async (req: AuthRequest, res: Response) => {
       tags,
       sections,
       cveRefs,
+      chainSteps,
       status,
     } = req.body;
 
@@ -54,6 +99,7 @@ export const createWriteup = async (req: AuthRequest, res: Response) => {
       tags,
       sections,
       cveRefs,
+      chainSteps,
       status,
       author: req.userId,
     });
@@ -92,32 +138,8 @@ export const getWriteups = async (req: AuthRequest, res: Response) => {
       Writeup.countDocuments(filter),
     ]);
 
-    const writeupIds = writeups.map((w) => w._id);
-
-    const [likeGroups, commentGroups] = await Promise.all([
-      Like.aggregate([
-        { $match: { writeup: { $in: writeupIds } } },
-        { $group: { _id: "$writeup", count: { $sum: 1 } } },
-      ]),
-      Comment.aggregate([
-        { $match: { writeup: { $in: writeupIds } } },
-        { $group: { _id: "$writeup", count: { $sum: 1 } } },
-      ]),
-    ]);
-
-    const likeCounts = new Map(
-      likeGroups.map((g) => [String(g._id), g.count]),
-    );
-    const commentCounts = new Map(
-      commentGroups.map((g) => [String(g._id), g.count]),
-    );
-
     res.json({
-      writeups: writeups.map((w) => ({
-        ...w.toObject(),
-        likesCount: likeCounts.get(String(w._id)) ?? 0,
-        commentCount: commentCounts.get(String(w._id)) ?? 0,
-      })),
+      writeups: await enrichCounts(writeups, req.userId),
       pagination: {
         page: pageNum,
         limit: limitNum,
@@ -220,6 +242,51 @@ export const getWriteupById = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const getRelatedWriteups = async (req: AuthRequest, res: Response) => {
+  try {
+    const writeup = await Writeup.findById(req.params.id).select(
+      "category tags status",
+    );
+    if (!writeup || writeup.status !== "published") {
+      return res.json({ writeups: [] });
+    }
+
+    const candidates = await Writeup.aggregate([
+      {
+        $match: {
+          _id: { $ne: writeup._id },
+          status: "published",
+          $or: [
+            { category: writeup.category },
+            { tags: { $in: writeup.tags } },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          score: {
+            $add: [
+              { $size: { $setIntersection: ["$tags", writeup.tags] } },
+              { $cond: [{ $eq: ["$category", writeup.category] }, 1, 0] },
+            ],
+          },
+        },
+      },
+      { $sort: { score: -1, createdAt: -1 } },
+      { $limit: 4 },
+    ]);
+
+    const related = await Writeup.populate(candidates, {
+      path: "author",
+      select: "username",
+    });
+
+    res.json({ writeups: await enrichCounts(related, req.userId) });
+  } catch (err) {
+    return handleServerError(res, err);
+  }
+};
+
 export const updateWriteup = async (req: AuthRequest, res: Response) => {
   try {
     const writeup = await Writeup.findById(req.params.id);
@@ -240,6 +307,7 @@ export const updateWriteup = async (req: AuthRequest, res: Response) => {
       "tags",
       "sections",
       "cveRefs",
+      "chainSteps",
       "status",
     ] as const;
 

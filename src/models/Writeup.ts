@@ -1,5 +1,14 @@
 import { Schema, model, Document, Types } from "mongoose";
 
+export interface IChainStep {
+  id: string;
+  title: string;
+  description: string;
+  technique?: string;
+  tool?: string;
+  cveRef?: string;
+}
+
 export interface IWriteup extends Document {
   title: string;
   category: "web" | "pwn" | "crypto" | "forensics" | "osint" | "misc";
@@ -13,6 +22,7 @@ export interface IWriteup extends Document {
     takeaway: string;
   };
   cveRefs: string[];
+  chainSteps: IChainStep[];
   status: "draft" | "published";
   views: number;
   author: Types.ObjectId;
@@ -38,6 +48,17 @@ const writeupSchema = new Schema<IWriteup>(
       takeaway: { type: String, required: true },
     },
     cveRefs: [{ type: String, trim: true }],
+    chainSteps: [
+      {
+        _id: false,
+        id: { type: String, required: true },
+        title: { type: String, required: true, trim: true },
+        description: { type: String, default: "" },
+        technique: { type: String, trim: true },
+        tool: { type: String, trim: true },
+        cveRef: { type: String, trim: true },
+      },
+    ],
     status: {
       type: String,
       enum: ["draft", "published"],

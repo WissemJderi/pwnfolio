@@ -35,6 +35,15 @@ export const changePasswordSchema = z.strictObject({
     .max(72, "new password must be between 8 and 72 characters"),
 });
 
+const chainStepSchema = z.strictObject({
+  id: z.string().trim().min(1).max(40),
+  title: z.string().trim().min(1, "step title is required").max(120),
+  description: z.string().max(2000).default(""),
+  technique: z.string().trim().max(80).optional(),
+  tool: z.string().trim().max(80).optional(),
+  cveRef: z.string().trim().max(100).optional(),
+});
+
 const writeupField = {
   title: z.string().trim().min(1, "title is required").max(150),
   category: z.enum(CATEGORIES, "invalid category"),
@@ -51,6 +60,7 @@ const writeupField = {
     takeaway: z.string().max(10000),
   }),
   cveRefs: z.array(z.string().trim().max(100)).max(10).default([]),
+  chainSteps: z.array(chainStepSchema).max(30).default([]),
 };
 
 export const createWriteupSchema = z.strictObject({

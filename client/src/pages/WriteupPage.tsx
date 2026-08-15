@@ -10,14 +10,17 @@ import {
   TbMessageCircle,
 } from "react-icons/tb";
 import { api } from "../api/client";
-import type { Writeup } from "../api/types";
+import type { RelatedWriteupsResponse, Writeup } from "../api/types";
 import { useAuth } from "../context/AuthContext";
 import { CollapsibleSection } from "../components/CollapsibleSection";
 import { Comments } from "../components/Comments";
+import { ExploitChainVisualizer } from "../components/ExploitChain/ExploitChainVisualizer";
 import { Markdown } from "../components/Markdown";
 import { ReadingProgress } from "../components/ReadingProgress";
 import { Skeleton, SectionSkeleton } from "../components/Skeleton";
+import { Stagger, StaggerItem } from "../components/Stagger";
 import { UserHover } from "../components/UserHoverCard";
+import { WriteupCard } from "../components/WriteupCard";
 import {
   CATEGORY_BADGE,
   CATEGORY_LABELS,
@@ -42,6 +45,7 @@ export const WriteupPage = () => {
   const [notFound, setNotFound] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [relatedWriteups, setRelatedWriteups] = useState<Writeup[]>([]);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -55,6 +59,14 @@ export const WriteupPage = () => {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!id) return;
+    setRelatedWriteups([]);
+    api<RelatedWriteupsResponse>(`/api/writeups/${id}/related`)
+      .then((res) => setRelatedWriteups(res.writeups))
+      .catch(() => {});
+  }, [id]);
 
   useEffect(() => {
     setCollapsed({});
@@ -277,6 +289,9 @@ export const WriteupPage = () => {
               collapsed={!!collapsed[key]}
               onToggle={() => toggleSection(key)}
             >
+              {key === "exploitChain" && (
+                <ExploitChainVisualizer steps={writeup.chainSteps} />
+              )}
               <Markdown source={writeup.sections[key]} />
             </CollapsibleSection>
           ))}
@@ -382,6 +397,21 @@ export const WriteupPage = () => {
       </div>
 
       <Comments writeupId={writeup._id} onCountChange={setCommentCount} />
+
+      {relatedWriteups.length > 0 && (
+        <section className="mt-10 border-t border-line-800 pt-8">
+          <p className="section-head">
+            <span className="text-ink-500">##</span> related writeups
+          </p>
+          <Stagger className="grid gap-4 sm:grid-cols-2">
+            {relatedWriteups.map((w) => (
+              <StaggerItem key={w._id}>
+                <WriteupCard writeup={w} />
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </section>
+      )}
     </article>
   );
 };

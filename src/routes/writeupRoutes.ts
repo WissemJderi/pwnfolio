@@ -5,6 +5,7 @@ import {
   getWriteups,
   getWriteupById,
   getFeaturedWriteup,
+  getRelatedWriteups,
   updateWriteup,
   deleteWriteup,
 } from "../controllers/writeupController";
@@ -30,9 +31,10 @@ import { writeLimiter, interactionLimiter } from "../middleware/rateLimit";
 
 const router = Router();
 
-router.get("/", validateQuery(writeupQuerySchema), getWriteups);
+router.get("/", optionalAuth, validateQuery(writeupQuerySchema), getWriteups);
 router.get("/featured", getFeaturedWriteup);
 router.get("/:id", optionalAuth, validateParams(writeupIdParamsSchema), getWriteupById);
+router.get("/:id/related", optionalAuth, validateParams(writeupIdParamsSchema), getRelatedWriteups);
 router.post("/", requireAuth, writeLimiter, validate(createWriteupSchema), createWriteup);
 router.put("/:id", requireAuth, writeLimiter, validateParams(writeupIdParamsSchema), validate(updateWriteupSchema), updateWriteup);
 router.delete("/:id", requireAuth, writeLimiter, validateParams(writeupIdParamsSchema), deleteWriteup);

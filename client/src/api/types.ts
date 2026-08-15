@@ -12,6 +12,7 @@ export type WriteupStatus = NonNullable<
   z.infer<typeof createWriteupSchema>["status"]
 >;
 export type WriteupSections = z.infer<typeof createWriteupSchema>["sections"];
+export type ChainStep = z.infer<typeof createWriteupSchema>["chainSteps"][number];
 
 export type ProfileLinks = NonNullable<
   z.infer<typeof updateProfileSchema>["links"]
@@ -38,6 +39,7 @@ export interface Writeup {
   tags: string[];
   sections: WriteupSections;
   cveRefs: string[];
+  chainSteps: ChainStep[];
   status: WriteupStatus;
   views?: number;
   author: AuthorRef | string;
@@ -51,6 +53,10 @@ export interface Writeup {
 
 export interface FeaturedResponse {
   writeup: (Writeup & { likesCount: number }) | null;
+}
+
+export interface RelatedWriteupsResponse {
+  writeups: Writeup[];
 }
 
 export interface WriteupListResponse {
