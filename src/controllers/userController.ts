@@ -4,6 +4,7 @@ import User from "../models/User";
 import Writeup from "../models/Writeup";
 import Like from "../models/Like";
 import Comment from "../models/Comment";
+import Follow from "../models/Follow";
 import { AuthRequest } from "../middleware/authMiddleware";
 
 export const getPublicProfile = async (req: AuthRequest, res: Response) => {
@@ -51,8 +52,21 @@ export const getPublicProfile = async (req: AuthRequest, res: Response) => {
         )
       : new Set<string>();
 
+    const [followersCount, followingCount, isFollowedByMe] = await Promise.all([
+      Follow.countDocuments({ following: user._id }),
+      Follow.countDocuments({ follower: user._id }),
+      req.userId
+        ? Follow.exists({ follower: req.userId, following: user._id }).then(Boolean)
+        : Promise.resolve(false),
+    ]);
+
     res.json({
-      user,
+      user: {
+        ...user.toObject(),
+        followersCount,
+        followingCount,
+        isFollowedByMe,
+      },
       writeups: writeups.map((w) => ({
         ...w.toObject(),
         likesCount: likeCounts.get(String(w._id)) ?? 0,
@@ -81,9 +95,11 @@ export const getUserCard = async (req: AuthRequest, res: Response) => {
 
     const writeupIds = writeups.map((w) => w._id);
 
-    const [likes, comments] = await Promise.all([
+    const [likes, comments, followers, following] = await Promise.all([
       Like.countDocuments({ writeup: { $in: writeupIds } }),
       Comment.countDocuments({ writeup: { $in: writeupIds } }),
+      Follow.countDocuments({ following: user._id }),
+      Follow.countDocuments({ follower: user._id }),
     ]);
 
     res.json({
@@ -97,6 +113,8 @@ export const getUserCard = async (req: AuthRequest, res: Response) => {
         likes,
         comments,
         views: writeups.reduce((sum, w) => sum + (w.views ?? 0), 0),
+        followers,
+        following,
       },
     });
   } catch (err) {

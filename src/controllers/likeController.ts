@@ -1,6 +1,8 @@
 import { Response } from "express";
 import { handleServerError } from "../utils/error";
 import Like from "../models/Like";
+import Writeup from "../models/Writeup";
+import Notification from "../models/Notification";
 import { findVisibleWriteup } from "../utils/writeupAccess";
 import { AuthRequest } from "../middleware/authMiddleware";
 
@@ -14,6 +16,16 @@ export const likeWriteup = async (req: AuthRequest, res: Response) => {
     }
 
     await Like.create({ user: req.userId, writeup: writeupId });
+
+    if (writeup.author.toString() !== req.userId) {
+      await Notification.create({
+        recipient: writeup.author,
+        actor: req.userId,
+        type: "like",
+        writeup: writeup._id,
+      });
+    }
+
     res.status(201).json({ message: "Liked" });
   } catch (err) {
     if ((err as { code?: number }).code === 11000) {
@@ -32,6 +44,18 @@ export const unlikeWriteup = async (req: AuthRequest, res: Response) => {
     if (!result) {
       return res.status(404).json({ message: "Like not found" });
     }
+
+    const writeup = await Writeup.findById(req.params.id).select("author");
+    if (writeup) {
+      await Notification.deleteOne({
+        recipient: writeup.author,
+        actor: req.userId,
+        writeup: writeup._id,
+        type: "like",
+        read: false,
+      });
+    }
+
     res.status(204).send();
   } catch (err) {
     return handleServerError(res, err);

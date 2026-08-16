@@ -12,7 +12,7 @@ const card: UserCard = {
   bio: "just an operator",
   interests: ["web", "pwn"],
   createdAt: "2024-01-01T00:00:00Z",
-  stats: { writeups: 4, likes: 12, comments: 3, views: 400 },
+  stats: { writeups: 4, likes: 12, comments: 3, views: 400, followers: 2, following: 1 },
 };
 
 const renderWithCard = () =>

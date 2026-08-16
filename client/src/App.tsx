@@ -6,6 +6,7 @@ import { PageTransition } from "./components/PageTransition";
 import { ScrollRestoration } from "./components/ScrollRestoration";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { UserHoverCardProvider } from "./components/UserHoverCard";
+import { NotificationsProvider } from "./components/NotificationBell";
 import { HomePage } from "./pages/HomePage";
 
 const WriteupPage = lazy(() =>
@@ -19,6 +20,12 @@ const MyWriteupsPage = lazy(() =>
 );
 const SavedWriteupsPage = lazy(() =>
   import("./pages/SavedWriteupsPage").then((m) => ({ default: m.SavedWriteupsPage })),
+);
+const ActivityFeedPage = lazy(() =>
+  import("./pages/ActivityFeedPage").then((m) => ({ default: m.ActivityFeedPage })),
+);
+const NotificationsPage = lazy(() =>
+  import("./pages/NotificationsPage").then((m) => ({ default: m.NotificationsPage })),
 );
 const ProfilePage = lazy(() =>
   import("./pages/ProfilePage").then((m) => ({ default: m.ProfilePage })),
@@ -65,129 +72,155 @@ export default function App() {
   const location = useLocation();
   return (
     <UserHoverCardProvider>
-      <ScrollRestoration />
-      <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
-        <Route element={<Layout />}>
-          <Route
-            path="/"
-            element={
-              <PageTransition>
-                <HomePage />
-              </PageTransition>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <PageTransition>
-                <Lazy>
-                  <LoginPage />
-                </Lazy>
-              </PageTransition>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PageTransition>
-                <Lazy>
-                  <RegisterPage />
-                </Lazy>
-              </PageTransition>
-            }
-          />
-          <Route
-            path="/writeups/:id"
-            element={
-              <PageTransition>
-                <Lazy>
-                  <WriteupPage />
-                </Lazy>
-              </PageTransition>
-            }
-          />
-          <Route
-            path="/writeups/new"
-            element={
-              <ProtectedRoute>
+      <NotificationsProvider>
+        <ScrollRestoration />
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+          <Route element={<Layout />}>
+            <Route
+              path="/"
+              element={
+                <PageTransition>
+                  <HomePage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/login"
+              element={
                 <PageTransition>
                   <Lazy>
-                    <EditorPage />
+                    <LoginPage />
                   </Lazy>
                 </PageTransition>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/writeups/:id/edit"
-            element={
-              <ProtectedRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
                 <PageTransition>
                   <Lazy>
-                    <EditorPage />
+                    <RegisterPage />
                   </Lazy>
                 </PageTransition>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/me/writeups"
-            element={
-              <ProtectedRoute>
+              }
+            />
+            <Route
+              path="/writeups/:id"
+              element={
                 <PageTransition>
                   <Lazy>
-                    <MyWriteupsPage />
+                    <WriteupPage />
                   </Lazy>
                 </PageTransition>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/me/saved"
-            element={
-              <ProtectedRoute>
+              }
+            />
+            <Route
+              path="/writeups/new"
+              element={
+                <ProtectedRoute>
+                  <PageTransition>
+                    <Lazy>
+                      <EditorPage />
+                    </Lazy>
+                  </PageTransition>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/writeups/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <PageTransition>
+                    <Lazy>
+                      <EditorPage />
+                    </Lazy>
+                  </PageTransition>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/me/writeups"
+              element={
+                <ProtectedRoute>
+                  <PageTransition>
+                    <Lazy>
+                      <MyWriteupsPage />
+                    </Lazy>
+                  </PageTransition>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/me/saved"
+              element={
+                <ProtectedRoute>
+                  <PageTransition>
+                    <Lazy>
+                      <SavedWriteupsPage />
+                    </Lazy>
+                  </PageTransition>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/me/notifications"
+              element={
+                <ProtectedRoute>
+                  <PageTransition>
+                    <Lazy>
+                      <NotificationsPage />
+                    </Lazy>
+                  </PageTransition>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/me/activity"
+              element={
+                <ProtectedRoute>
+                  <PageTransition>
+                    <Lazy>
+                      <ActivityFeedPage />
+                    </Lazy>
+                  </PageTransition>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/users/:username"
+              element={
                 <PageTransition>
                   <Lazy>
-                    <SavedWriteupsPage />
+                    <ProfilePage />
                   </Lazy>
                 </PageTransition>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/users/:username"
-            element={
-              <PageTransition>
-                <Lazy>
-                  <ProfilePage />
-                </Lazy>
-              </PageTransition>
-            }
-          />
-          <Route
-            path="/users/:username/stats"
-            element={
-              <PageTransition>
-                <Lazy>
-                  <StatsPage />
-                </Lazy>
-              </PageTransition>
-            }
-          />
-          <Route
-            path="*"
-            element={
-              <PageTransition>
-                <Lazy>
-                  <NotFoundPage />
-                </Lazy>
-              </PageTransition>
-            }
-          />
-        </Route>
-      </Routes>
-      </AnimatePresence>
+              }
+            />
+            <Route
+              path="/users/:username/stats"
+              element={
+                <PageTransition>
+                  <Lazy>
+                    <StatsPage />
+                  </Lazy>
+                </PageTransition>
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <PageTransition>
+                  <Lazy>
+                    <NotFoundPage />
+                  </Lazy>
+                </PageTransition>
+              }
+            />
+          </Route>
+        </Routes>
+        </AnimatePresence>
+      </NotificationsProvider>
     </UserHoverCardProvider>
   );
 }

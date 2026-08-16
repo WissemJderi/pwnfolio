@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { handleServerError } from "../utils/error";
 import Comment from "../models/Comment";
+import Notification from "../models/Notification";
 import { findVisibleWriteup } from "../utils/writeupAccess";
 import { AuthRequest } from "../middleware/authMiddleware";
 
@@ -21,8 +22,9 @@ export const createComment = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Writeup not found" });
     }
 
+    let parentComment = null;
     if (parent) {
-      const parentComment = await Comment.findOne({
+      parentComment = await Comment.findOne({
         _id: parent,
         writeup: writeup._id,
       });
@@ -45,6 +47,31 @@ export const createComment = async (req: AuthRequest, res: Response) => {
       content,
     });
     await comment.populate("author", "username");
+
+    if (writeup.author.toString() !== req.userId) {
+      await Notification.create({
+        recipient: writeup.author,
+        actor: req.userId,
+        type: "comment",
+        writeup: writeup._id,
+        comment: comment._id,
+      });
+    }
+
+    if (
+      parent &&
+      parentComment &&
+      parentComment.author.toString() !== req.userId &&
+      parentComment.author.toString() !== writeup.author.toString()
+    ) {
+      await Notification.create({
+        recipient: parentComment.author,
+        actor: req.userId,
+        type: "reply",
+        writeup: writeup._id,
+        comment: comment._id,
+      });
+    }
 
     res.status(201).json(comment);
   } catch (err) {

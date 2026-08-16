@@ -75,6 +75,8 @@ describe("GET /api/users/:username/card", () => {
       likes: 1,
       comments: 1,
       views: 0,
+      followers: 0,
+      following: 0,
     });
     expect(res.body).not.toHaveProperty("password");
   });

@@ -90,6 +90,9 @@ export interface PublicProfile {
     interests?: string[];
     links?: ProfileLinks;
     createdAt: string;
+    followersCount: number;
+    followingCount: number;
+    isFollowedByMe: boolean;
   };
   writeups: Writeup[];
 }
@@ -105,11 +108,40 @@ export interface UserCard {
     likes: number;
     comments: number;
     views: number;
+    followers: number;
+    following: number;
   };
 }
 
 export interface StatsBucket {
   name: string;
+  count: number;
+}
+
+export type NotificationType = "like" | "comment" | "reply";
+
+export interface NotificationItem {
+  _id: string;
+  recipient: string;
+  actor: AuthorRef;
+  type: NotificationType;
+  writeup: { _id: string; title: string } | string;
+  comment?: string;
+  read: boolean;
+  createdAt: string;
+}
+
+export interface NotificationListResponse {
+  notifications: NotificationItem[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface UnreadCountResponse {
   count: number;
 }
 

@@ -8,11 +8,13 @@ import {
   TbLogout,
   TbMenu2,
   TbSquareRoundedPlus,
+  TbUsers,
   TbWriting,
   TbX,
 } from "react-icons/tb";
 import { useAuth } from "../context/AuthContext";
 import { ThemeToggle } from "./ThemeToggle";
+import { NotificationBell } from "./NotificationBell";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   `group flex items-center gap-2  border px-3 py-2 font-mono text-sm transition-colors ${
@@ -66,6 +68,12 @@ export const Sidebar = () => {
           my-saved
         </NavLink>
       )}
+      {user && (
+        <NavLink to="/me/activity" className={linkClass}>
+          <TbUsers size={15} className={iconClass} />
+          activity-feed
+        </NavLink>
+      )}
       <NavLink to="/" end className={linkClass}>
         <TbBooks size={15} className={iconClass} />
         all-writeups
@@ -89,6 +97,7 @@ export const Sidebar = () => {
           {user.email}
         </p>
       </div>
+      <NotificationBell />
       <button
         title="Logout"
         className="btn btn-ghost px-2 py-1 text-xs"

@@ -6,6 +6,7 @@ import {
   getWriteupById,
   getFeaturedWriteup,
   getRelatedWriteups,
+  getActivityFeed,
   updateWriteup,
   deleteWriteup,
 } from "../controllers/writeupController";
@@ -26,6 +27,7 @@ import {
   writeupQuerySchema,
   writeupIdParamsSchema,
   commentIdParamsSchema,
+  activityFeedQuerySchema,
 } from "../../shared/schemas";
 import { writeLimiter, interactionLimiter } from "../middleware/rateLimit";
 
@@ -33,6 +35,7 @@ const router = Router();
 
 router.get("/", optionalAuth, validateQuery(writeupQuerySchema), getWriteups);
 router.get("/featured", getFeaturedWriteup);
+router.get("/feed", requireAuth, validateQuery(activityFeedQuerySchema), getActivityFeed);
 router.get("/:id", optionalAuth, validateParams(writeupIdParamsSchema), getWriteupById);
 router.get("/:id/related", optionalAuth, validateParams(writeupIdParamsSchema), getRelatedWriteups);
 router.post("/", requireAuth, writeLimiter, validate(createWriteupSchema), createWriteup);

@@ -125,3 +125,17 @@ export const commentIdParamsSchema = z.strictObject({
   id: OBJECT_ID,
   commentId: OBJECT_ID,
 });
+
+export const activityFeedQuerySchema = z.strictObject({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(10),
+});
+
+export const notificationQuerySchema = z.strictObject({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(20),
+});
+
+export const notificationIdParamsSchema = z.strictObject({
+  id: OBJECT_ID,
+});

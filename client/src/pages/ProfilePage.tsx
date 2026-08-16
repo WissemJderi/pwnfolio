@@ -11,6 +11,7 @@ import type {
 } from "../api/types";
 import { useAuth } from "../context/AuthContext";
 import { WriteupCard } from "../components/WriteupCard";
+import { FollowButton } from "../components/FollowButton";
 import { Markdown } from "../components/Markdown";
 import { Stagger, StaggerItem } from "../components/Stagger";
 import { Skeleton, GridSkeleton } from "../components/Skeleton";
@@ -70,9 +71,13 @@ const sanitize = (links: ProfileLinks | undefined): ProfileLinks => {
 const StatsStrip = ({
   writeups,
   joined,
+  followers,
+  following,
 }: {
   writeups: Writeup[];
   joined: string;
+  followers: number;
+  following: number;
 }) => {
   const likes = writeups.reduce((sum, w) => sum + (w.likesCount ?? 0), 0);
   const comments = writeups.reduce((sum, w) => sum + (w.commentCount ?? 0), 0);
@@ -85,11 +90,13 @@ const StatsStrip = ({
     { label: "published", value: writeups.length },
     { label: "likes", value: likes },
     { label: "comments", value: comments },
+    { label: "followers", value: followers },
+    { label: "following", value: following },
     { label: "age", value: `${days}d` },
   ];
 
   return (
-    <div className="mt-5 grid grid-cols-2 gap-px overflow-hidden  border border-line-800 bg-line-800 sm:grid-cols-4">
+    <div className="mt-5 grid grid-cols-2 gap-px overflow-hidden  border border-line-800 bg-line-800 sm:grid-cols-3 lg:grid-cols-6">
       {stats.map(({ label, value }) => (
         <div key={label} className="bg-core-900/70 p-3 text-center">
           <p className="font-mono text-lg font-bold text-ink-100">{value}</p>
@@ -350,7 +357,7 @@ export const ProfilePage = () => {
               <h1 className="truncate font-mono text-2xl font-bold text-neon-400">
                 @{profile.user.username}
               </h1>
-              {isMine && (
+              {isMine ? (
                 <button
                   className="btn btn-outline px-2 py-1 text-xs"
                   onClick={() => (editing ? setEditing(false) : openEditor())}
@@ -365,6 +372,28 @@ export const ProfilePage = () => {
                     </>
                   )}
                 </button>
+              ) : (
+                user && (
+                  <FollowButton
+                    username={profile.user.username}
+                    isFollowedByMe={profile.user.isFollowedByMe}
+                    onChanged={(next) =>
+                      setProfile((p) =>
+                        p
+                          ? {
+                              ...p,
+                              user: {
+                                ...p.user,
+                                isFollowedByMe: next,
+                                followersCount:
+                                  p.user.followersCount + (next ? 1 : -1),
+                              },
+                            }
+                          : p,
+                      )
+                    }
+                  />
+                )
               )}
             </div>
             <p className="muted mt-1">
@@ -394,6 +423,8 @@ export const ProfilePage = () => {
         <StatsStrip
           writeups={profile.writeups}
           joined={profile.user.createdAt}
+          followers={profile.user.followersCount}
+          following={profile.user.followingCount}
         />
         {profile.writeups.length > 0 && (
           <CategoryBar writeups={profile.writeups} />

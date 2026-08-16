@@ -5,6 +5,7 @@ import Writeup from "../models/Writeup";
 import Like from "../models/Like";
 import SavedWriteup from "../models/SavedWriteup";
 import Comment from "../models/Comment";
+import Follow from "../models/Follow";
 import { findVisibleWriteup } from "../utils/writeupAccess";
 import { AuthRequest } from "../middleware/authMiddleware";
 
@@ -133,6 +134,47 @@ export const getWriteups = async (req: AuthRequest, res: Response) => {
       Writeup.find(filter)
         .populate("author", "username")
         .sort(sortOption)
+        .skip(skip)
+        .limit(limitNum),
+      Writeup.countDocuments(filter),
+    ]);
+
+    res.json({
+      writeups: await enrichCounts(writeups, req.userId),
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+      },
+    });
+  } catch (err) {
+    return handleServerError(res, err);
+  }
+};
+
+export const getActivityFeed = async (req: AuthRequest, res: Response) => {
+  try {
+    const { page, limit } = req.query;
+
+    const following = await Follow.find({ follower: req.userId }).select(
+      "following",
+    );
+    const followingIds = following.map((f) => f.following);
+
+    const pageNum = Math.max(parseInt(page as string) || 1, 1);
+    const limitNum = Math.min(parseInt(limit as string) || 10, 50);
+    const skip = (pageNum - 1) * limitNum;
+
+    const filter: Record<string, unknown> = {
+      author: { $in: followingIds },
+      status: "published",
+    };
+
+    const [writeups, total] = await Promise.all([
+      Writeup.find(filter)
+        .populate("author", "username")
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limitNum),
       Writeup.countDocuments(filter),
