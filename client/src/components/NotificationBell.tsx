@@ -166,7 +166,7 @@ export const NotificationBell = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -4 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute bottom-full left-0 z-[80] mb-2 w-72 border border-line-700 bg-core-900/95 font-mono shadow-[0_16px_40px_-16px_rgba(0,0,0,0.95)] backdrop-blur"
+            className="fixed inset-x-4 bottom-4 z-[80] flex max-h-[70vh] flex-col border border-line-700 bg-core-900/95 font-mono shadow-[0_16px_40px_-16px_rgba(0,0,0,0.95)] backdrop-blur lg:absolute lg:inset-x-auto lg:inset-y-auto lg:bottom-full lg:left-0 lg:mb-2 lg:block lg:w-72 lg:max-h-none"
           >
             <div className="flex items-center justify-between border-b border-line-800 px-3 py-2">
               <span className="text-[11px] uppercase tracking-[0.18em] text-ink-500">
@@ -183,7 +183,7 @@ export const NotificationBell = () => {
               )}
             </div>
 
-            <div className="max-h-80 overflow-y-auto">
+            <div className="min-h-0 flex-1 overflow-y-auto lg:max-h-80 lg:flex-none">
               {status === "loading" && (
                 <div className="space-y-2 p-3">
                   <div className="h-8 w-full animate-pulse bg-core-700/50" />
